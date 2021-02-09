@@ -16,8 +16,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include <iostream>
-#include "eigen_units.h"
-#include "../common/typestring.h"
+#include "../eigen_units.h"
 
 using namespace std;
 using namespace Units;
@@ -67,12 +66,6 @@ int main(){
   // since eigen can't handle Area = Distance * Distance, must IgnoreUnits
   double norm = IgnoreUnits(m).norm();
   cout << "norm: " << norm << "\n";
-
-  // test IgnoreUnits
-  const MVec& mr = m;
-  cout << "IgnoreUnits readwrite version: " << typestring(IgnoreUnits(m))   << "\n";  // readwrite version
-  cout << "IgnoreUnits readonly version:  " << typestring(IgnoreUnits(mr))  << "\n";  // readonly version
-  cout << "IgnoreUnits rvalue version:    " << typestring(IgnoreUnits(m+m)) << "\n";  // rvalue version
 
   // double = Unit/Unit
   // Should work like this, but Eigen doesn't like it.  See OpTraits note above about "ambiguous template"

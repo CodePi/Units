@@ -16,7 +16,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include <Eigen/Core>
-#include "../sim_math/units.h"
+#include "units.h"
 
 namespace Eigen {
 
