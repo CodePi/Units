@@ -47,12 +47,12 @@ public:
   explicit Unit(FloatType val) : m_val(val) {}
 
   template<typename R2,typename FT2>
-  Unit(Unit<C,R2,FT2>other){
+  Unit(Unit<C,R2,FT2> other){
     set(other);
   }
 
   template<typename R2,typename FT2>
-  Unit& operator=(Unit<C,R2,FT2>other){
+  Unit& operator=(Unit<C,R2,FT2> other){
     set(other);
     return *this;
   }
@@ -60,23 +60,27 @@ public:
   //////////////
   // get methods
 
+  // get value as new unit
   template<typename U>
   FloatType get() const {
     return U(*this).get();
   }
 
+  // get value as current unit
   FloatType get() const { return m_val; }
 
   //////////////
   // set methods
 
+  // set by floating point value
   template<typename U>
   void set(FloatType val){
     set(U(val));
   }
 
+  // set by other Unit
   template<typename R2, typename FT2>
-  void set(Unit<C,R2,FT2>other){
+  void set(Unit<C,R2,FT2> other){
     // mult =  R2 / R
     constexpr long double mult = ((long double)R2::M / R::M);
     // offset = R_offset - mult * R2_offset
@@ -227,7 +231,7 @@ struct RatioInv{
   GEN_DIV(U3,U1,U2,double)                                           \
   GEN_DIV(U3,U1,U2,float)
 
-// Macro for generating Uo = inverse(Ui)
+// Macro helper GEN_INVERSE
 #define GEN_INVERSE_HELPER(Uo,Ui,FT)                                                 \
   template <typename Ri,                                                             \
             typename Ro = RatioProd<RatioInv<Ri>,Uo,Ui>>                             \
@@ -236,6 +240,7 @@ struct RatioInv{
     return Unit<Uo::C, Ro, FT>(1/s.get());                                           \
   }
 
+// Macro helper for generating Uo = inverse(Ui)
 #define GEN_INVERSE(U1, U2)           \
   GEN_INVERSE_HELPER(U1, U2, double)  \
   GEN_INVERSE_HELPER(U1, U2, float)   \
