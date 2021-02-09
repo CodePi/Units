@@ -36,21 +36,24 @@ public:
   typedef Category C;
   typedef FloatType_ FloatType;
   typedef FloatType_ FT;
-  static constexpr long double M = R::M;
-  static constexpr long double O = R::O;
+  static constexpr long double M = Ratio::M;
+  static constexpr long double O = Ratio::O;
 
   //////////////////////////
   // Constructors and assign
 
   Unit() = default;
 
+  // Construct from FloatTyoe
   explicit Unit(FloatType val) : m_val(val) {}
 
+  // Construct from other Unit (and convert)
   template<typename R2,typename FT2>
   Unit(Unit<C,R2,FT2> other){
     set(other);
   }
 
+  // Assign from other Unit (and convert)
   template<typename R2,typename FT2>
   Unit& operator=(Unit<C,R2,FT2> other){
     set(other);
@@ -72,18 +75,18 @@ public:
   //////////////
   // set methods
 
-  // set by floating point value
+  // set by FloatTyoe value
   template<typename U>
   void set(FloatType val){
     set(U(val));
   }
 
-  // set by other Unit
+  // set by other Unit (and convert)
   template<typename R2, typename FT2>
   void set(Unit<C,R2,FT2> other){
-    // mult =  R2 / R
+    // Compute multiplier: mult =  R2 / R
     constexpr long double mult = ((long double)R2::M / R::M);
-    // offset = R_offset - mult * R2_offset
+    // Compute offset: offset = R_offset - mult * R2_offset
     constexpr FloatType offset = ((long double)R::O) - mult*((long double)R2::O);
     // val = mult * other + offset
     m_val = (FloatType)mult * other.get();
@@ -105,18 +108,18 @@ public:
     return Unit(m_val-Unit(other).get());
   }
 
-  // double = Unit / Unit
+  // FloatTyoe = Unit / Unit
   template<typename R2, typename FT2>
   FloatType operator/(Unit<C,R2,FT2> other) const{
     return m_val / Unit(other).get();
   }
 
-  // Unit = Unit * double
+  // Unit = Unit * FloatTyoe
   Unit operator*(FloatType scalar) const{
     return Unit(m_val*scalar);
   }
 
-  // Unit = Unit / double
+  // Unit = Unit / FloatTyoe
   Unit operator/(FloatType scalar) const{
     return Unit(m_val/scalar);
   }
