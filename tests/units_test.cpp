@@ -244,6 +244,7 @@ int main(){
   assert(Rods(40)/HogsHead(1) == RodsToTheHogHead(40));
   assert(Radians(20)/Seconds(10) == RadiansPerSecond(2));
   assert(6050_J / 5_us == 1.21_GW);
+  assert(11_mi / 450_s == 88_mph);
 
   // trig
   cout << "sin(180_deg): " << sin(180_deg) << "\n";
