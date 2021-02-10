@@ -377,9 +377,9 @@ GEN_LITERAL(_kph, KilometersPerHour)
 
 /////////////////////////
 // Astronomical Distances
-using LightYear        = Unit<Distance,RatioProd<SpeedOfLight,Year>>;
-using AstronomicalUnit = Unit<Distance,RatioProd<LightYear,Ratio<10,632411>>>;
-using Parsec           = Unit<Distance,RatioProd<AstronomicalUnit,Ratio<206265>>>;
+using LightYears        = Unit<Distance,RatioProd<SpeedOfLight,Year>>;
+using AstronomicalUnits = Unit<Distance,RatioProd<LightYears,Ratio<10,632411>>>;
+using Parsecs           = Unit<Distance,RatioProd<AstronomicalUnits,Ratio<206265>>>;
 
 ///////////////
 // Acceleration

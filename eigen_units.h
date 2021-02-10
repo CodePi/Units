@@ -100,3 +100,4 @@ template<typename D>
 auto IgnoreUnits(const Eigen::MatrixBase<D>& m) -> decltype(m.template cast<double>()) {
   return m.template cast<double>();
 }
+

@@ -131,7 +131,7 @@ int main(){
   cout << "0 C to K: " << Celsius(0).get<Kelvin>() << "\n";
   cout << "180 deg in radians: " << Degrees(180).get<Radians>() << "\n";
   cout << "40 rods to the hogshead to miles per gallon: " << RodsToTheHogHead(40).get<MilesPerGallon>() << "\n";
-  cout << "1 lightyear in meters: " << LightYear(1).get<Meters>() << "\n";
+  cout << "1 lightyear in meters: " << LightYears(1).get<Meters>() << "\n";
 
   // user-defined literals
   Meters m = 10_m + 15_cm;
@@ -175,9 +175,9 @@ int main(){
   assert(MetricTons(1).approx(Tons(1.1023113)));
   assert(Bananas(1)==178_mm);
   assert(SpeedOfLight(1) == MetersPerSecond(299792458));
-  assert(LightYear(1).approx(Meters(9.46053e+15)));
-  assert(LightYear(10) == AstronomicalUnit(632411));
-  assert(Parsec(1) == AstronomicalUnit(206265));
+  assert(LightYears(1).approx(Meters(9.46053e+15)));
+  assert(LightYears(10) == AstronomicalUnits(632411));
+  assert(Parsecs(1) == AstronomicalUnits(206265));
   assert(86400_s == 1_dy);
   assert(220_yd == Furlong(1));
   assert(Fortnight(1)==14_dy);
@@ -243,6 +243,7 @@ int main(){
   assert(200_mi/Gallons(10) == MilesPerGallon(20));
   assert(Rods(40)/HogsHead(1) == RodsToTheHogHead(40));
   assert(Radians(20)/Seconds(10) == RadiansPerSecond(2));
+  assert(6050_J / 5_us == 1.21_GW);
 
   // trig
   cout << "sin(180_deg): " << sin(180_deg) << "\n";
