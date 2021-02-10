@@ -38,7 +38,7 @@ Meters ToMeters(double val, const string& unit){
   throw std::runtime_error("ToMeters: unit not recognized");
 }
 
-// parses string of format number followed by unit, spaced ignored, anything past units ignored
+// parses string of format number followed by unit, spaces are ignored and anything past units is ignored
 // e.g. "5ft", "2.7m", "  27 ft  ", "3.14ft this is ignored"
 Meters ToMeters(const string& val){
   stringstream ss(val);
