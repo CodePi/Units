@@ -4,7 +4,7 @@ Header only, C++11, minimal overhead, type enforced conversion library for measu
 ## Features
 * Units safety enforced at compile time. 
 * Most conversion operations compile down to single assembly instruction.
-* Zero size overhead.  The unit storage is exact the size of the floating point type that represents it (float or double)
+* Zero size overhead.  The unit storage is exactly the size of the floating point type that represents it (float or double).
 * Supports more than a dozen measurement categories.  E.g. distance, speed, temperature, etc..
 * Supports more than 100 varied units.
 * Easy to add new units and categories.  Typically one line of code per new unit.
