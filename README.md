@@ -11,7 +11,7 @@ Header only, C++11, minimal overhead, type enforced conversion library for measu
 * Automatically converts accurately and quickly between units in the same category.  E.g. meters to miles.
 * Understands relationships between categories.  E.g. `speed = distance/time` and `energy = power*time`.
 * Most units have user-defined literals.  E.g. `88_mph` and `1.21_GW`. 
-* Optional support for Eigen library.  E.g. can create an eigen vector of type Meters.  And supports bulk conversion and arithmetic on eigen containers of units.
+* Optional (experimental) support for Eigen library.  E.g. can create an eigen vector of type Meters.  And supports bulk conversion and arithmetic on eigen containers of units.
 
 ## Example Usage
 ### Basic usage and math with automatic conversion:
@@ -24,7 +24,7 @@ Parsecs kessel_run(12); // kessel_run in 12 parsecs
 assert(Fahrenheit(212)==Celsius(100));  // Boiling point
 ```
 
-### Built in user-defined literals
+### Built-in user-defined literals
 ```c++
 Meters d = 25.3_cm + 1_km;   // d is 1000.253 meters
 Celsius t = 98.6_F;          // t is 37 celsius
