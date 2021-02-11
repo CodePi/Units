@@ -287,11 +287,11 @@ int main(){
   assert(Angstroms(1)*Angstroms(1)*Angstroms(1)==CubicMeters(1e-30));
 
   // these shouldn't compile
-  //Feet f = 10;            // implicit conversion not allowed
-  //double d = Feet(10);    // implicit conversion not allowed
-  //Miles(1).get<Knots>();
+  //Feet f = 10;               // implicit conversion not allowed
+  //double d = Feet(10);       // implicit conversion not allowed
+  //Miles(1).get<Knots>();     // category mismatch
   //Miles m2;
-  //m2.set<Knots>(1);
-  //Miles m = Seconds(1);
-  //auto s = Meters(1)/Hz(1);
+  //m2.set<Knots>(1);          // category mismatch
+  //Miles m = Seconds(1);      // category mismatch
+  //auto s = Meters(1)/Hz(1);  // invalid relationship
 }
