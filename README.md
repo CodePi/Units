@@ -38,7 +38,7 @@ Millivolts mv = 10_mA * 20_ohms;     // 200 millivolts (Ohm's Law)
 ```
 
 ## More info
-* See [tests/units_test.cpp](tests/units_test.cpp) for many more examples.
 * See [units.md](units.md) for all of the pre-defined units, categories, and relationships.
+* See [tests/units_test.cpp](tests/units_test.cpp) for many more examples.
 * TODO: add instructions for new units.
 * TODO: add examples of get and set.
