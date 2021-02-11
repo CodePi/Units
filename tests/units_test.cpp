@@ -178,7 +178,7 @@ int main(){
   assert(LightYears(10) == AstronomicalUnits(632411));
   assert(Parsecs(1) == AstronomicalUnits(206265));
   assert(86400_s == 1_dy);
-  assert(220_yd == Furlong(1));
+  assert(220_yd == Furlongs(1));
   assert(Fortnight(1)==14_dy);
   assert(SquareMiles(1)==Acres(640));
 

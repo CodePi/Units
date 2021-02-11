@@ -295,11 +295,11 @@ using Angstroms     = Unit<Distance,RatioProd<Nanometers,Ratio<1,10>>>;
 using Inches        = Unit<Distance,Ratio<254,10000>>;
 using Feet          = Unit<Distance,Ratio<254*12,10000>>;
 using Yards         = Unit<Distance,Ratio<254*12*3,10000>>;
+using Furlongs      = Unit<Distance,Ratio<254*12*3*220,10000>>;
 using Miles         = Unit<Distance,Ratio<254*12*3*1760,10000>>;
 using NauticalMiles = Unit<Distance,Ratio<1852>>;
 using Rods          = Unit<Distance,RatioProd<Feet,Ratio<165,10>>>;
 using Bananas       = Unit<Distance,Ratio<178,1000>>;
-using Furlong       = Unit<Distance,RatioProd<Yards,Ratio<220>>>;
 
 GEN_LITERAL(_nm, Nanometers)
 GEN_LITERAL(_um, Microns)

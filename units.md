@@ -11,11 +11,11 @@
 * Inches (_in)
 * Feet (_ft)
 * Yards (_yd)
+* Furlongs
 * Miles (_mi)
 * NauticalMiles
 * Rods
 * Bananas
-* Furlong
 * LightYears
 * AstronomicalUnits
 * Parsecs
