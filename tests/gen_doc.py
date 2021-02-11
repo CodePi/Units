@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # output units.md
     with open("../units.md","w") as fp:
-        fp.write("## Units\n\n")
+        fp.write("## Units (and literal)\n\n")
         # write categories and units
         for category in categories:
             fp.write("### " + category + "\n")

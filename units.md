@@ -1,4 +1,4 @@
-## Units
+## Units (and literal)
 
 ### Distance
 * Kilometers (_km)
