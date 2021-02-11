@@ -181,6 +181,7 @@ int main(){
   assert(220_yd == Furlongs(1));
   assert(Fortnight(1)==14_dy);
   assert(SquareMiles(1)==Acres(640));
+  assert(Pounds(14) == Stones(1));
 
   // speed = distance / time
   MPH mph = 100_mi / 8_hr;

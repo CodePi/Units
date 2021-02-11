@@ -401,6 +401,7 @@ using Micrograms = Unit<Mass,Micro>;
 using Pounds     = Unit<Mass,Ratio<45359237,100000>>;
 using Ounces     = Unit<Mass,RatioProd<Pounds,Ratio<1,16>>>;
 using Tons       = Unit<Mass,RatioProd<Pounds,Ratio<2000>>>;
+using Stones     = Unit<Mass,RatioProd<Pounds,Ratio<14>>>;
 
 GEN_LITERAL(_kg, Kilograms)
 GEN_LITERAL( _g, Grams)

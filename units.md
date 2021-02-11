@@ -77,6 +77,7 @@
 * Pounds (_lbs)
 * Ounces (_oz)
 * Tons
+* Stones
 
 ### Force
 * Newtons (_N)
