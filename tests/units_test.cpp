@@ -248,18 +248,18 @@ int main(){
   // trig
   cout << "sin(180_deg): " << sin(180_deg) << "\n";
   cout << "cos(180_deg): " << cos(180_deg) << "\n";
-  assert(Degrees(180)==Radians(M_PI));
-  assert(sin(0_deg)==0);
-  assert(sin(180_deg)==sin(M_PI));
-  assert(sin(90_deg)==1);
-  assert(cos(0_deg)==1);
-  assert(cos(90_deg)==cos(M_PI/2));
-  assert(cos(180_deg)==-1);
-  assert(asin_units(0).approx(0_deg));
-  assert(asin_units(1).approx(90_deg));
-  assert(acos_units(0).approx(90_deg));
-  assert(acos_units(1).approx(0_deg));
-  assert(atan2_units(2,2).approx(45_deg));
+  assert(Degrees(180) == Radians(M_PI));
+  assert(sin(0_deg) == 0);
+  assert(sin(180_deg) == sin(M_PI));
+  assert(sin(90_deg) == 1);
+  assert(cos(0_deg) == 1);
+  assert(cos(90_deg) == cos(M_PI/2));
+  assert(cos(180_deg) == -1);
+  assert(asin_units(0) == 0_deg);
+  assert(asin_units(1) == 90_deg);
+  assert(acos_units(0) == 90_deg);
+  assert(acos_units(1) == 0_deg);
+  assert(atan2_units(2,2) == 45_deg);
 
   // override default FloatType type
   Meters mdef(5);
