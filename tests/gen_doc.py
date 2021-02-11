@@ -50,7 +50,7 @@ if __name__ == "__main__":
                         fp.write(" (%s)" % literal_map[unit])
                     fp.write("\n")
             fp.write("\n")
-        fp.write("## Relationships\n### Inverse, multiply, and corresponding divides\n")
+        fp.write("## Relationships\n### Note: multiplies have corresponding divides\n")
         for relationship in relationships:
             fp.write("* " + relationship + "\n")
 
