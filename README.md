@@ -1,15 +1,15 @@
 # Units
-Header only, C++11, minimal overhead, type enforced conversion library for measurement units.
+Header only, C++11, minimal overhead, type enforced conversion and arithmetic library for measurement units.
 
 ## Features
-* Units safety enforced at compile time. 
+* Unit safety enforced at compile time. 
 * Most conversion operations compile down to single assembly instruction.
 * Zero size overhead.  The unit storage is exactly the size of the floating point type that represents it (float or double).
 * Supports more than a dozen measurement categories.  E.g. distance, speed, temperature, etc..
-* Supports more than 100 varied units.
+* Supports more than 100 varied [units](units.md).
 * Easy to add new units and categories.  Typically one line of code per new unit.
 * Automatically converts accurately and quickly between units in the same category.  E.g. meters to miles.
-* Understands relationships between categories.  E.g. `speed = distance/time` and `energy = power*time`.
+* Understands [relationships](units.md#relationships) between categories.  E.g. `speed = distance/time` and `energy = power*time`.
 * Most units have user-defined literals.  E.g. `88_mph` and `1.21_GW`. 
 * Optional (experimental) support for Eigen library.  E.g. can create an eigen vector of type Meters.  And supports bulk conversion and arithmetic on eigen containers of units.
 
