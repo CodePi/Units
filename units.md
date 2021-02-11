@@ -48,8 +48,8 @@
 * Hours (_hr)
 * Days (_dy)
 * Weeks (_wk)
-* Fortnight
-* Year
+* Fortnights
+* Years
 * Milliseconds (_ms)
 * Microseconds (_us)
 * Nanoseconds (_ns)

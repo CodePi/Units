@@ -179,7 +179,7 @@ int main(){
   assert(Parsecs(1) == AstronomicalUnits(206265));
   assert(86400_s == 1_dy);
   assert(220_yd == Furlongs(1));
-  assert(Fortnight(1)==14_dy);
+  assert(Fortnights(1)==14_dy);
   assert(SquareMiles(1)==Acres(640));
   assert(Pounds(14) == Stones(1));
 

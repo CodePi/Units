@@ -348,8 +348,8 @@ using Minutes      = Unit<Time,Ratio<60>>;
 using Hours        = Unit<Time,Ratio<60*60>>;
 using Days         = Unit<Time,Ratio<60*60*24>>;
 using Weeks        = Unit<Time,Ratio<60*60*24*7>>;
-using Fortnight    = Unit<Time,Ratio<60*60*24*14>>;
-using Year         = Unit<Time,RatioProd<Days,Ratio<3652422,10000>>>;
+using Fortnights   = Unit<Time,Ratio<60*60*24*14>>;
+using Years        = Unit<Time,RatioProd<Days,Ratio<3652422,10000>>>;
 using Milliseconds = Unit<Time,Milli>;
 using Microseconds = Unit<Time,Micro>;
 using Nanoseconds  = Unit<Time,Nano>;
@@ -379,7 +379,7 @@ GEN_LITERAL(_kph, KilometersPerHour)
 
 /////////////////////////
 // Astronomical Distances
-using LightYears        = Unit<Distance,RatioProd<SpeedOfLight,Year>>;
+using LightYears        = Unit<Distance,RatioProd<SpeedOfLight,Years>>;
 using AstronomicalUnits = Unit<Distance,RatioProd<LightYears,Ratio<10,632411>>>;
 using Parsecs           = Unit<Distance,RatioProd<AstronomicalUnits,Ratio<206265>>>;
 
