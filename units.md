@@ -139,7 +139,7 @@
 * Rankine
 
 ## Relationships
-###Inverse, multiply, and corresponding divides
+### Inverse, multiply, and corresponding divides
 * Frequency = inverse(Time)
 * Distance = Speed * Time
 * Speed = Acceleration * Time
