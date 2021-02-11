@@ -366,7 +366,7 @@ GEN_LITERAL(_ns, Nanoseconds)
 using MetersPerSecond   = Unit<Speed,Base>;
 using KilometersPerHour = Unit<Speed,Ratio<1000,3600>>;
 using MilesPerHour      = Unit<Speed,RatioProd<Miles,RatioInv<Hours>>>;
-using MPH               = MilesPerHour;
+using MPH               = Unit<Speed,MetersPerSecond>;
 using Knots             = Unit<Speed,Ratio<1852,3600>>;
 using Mach              = Unit<Speed,Ratio<343>>;
 using SpeedOfLight      = Unit<Speed,Ratio<299792458>>;
