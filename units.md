@@ -24,6 +24,8 @@
 * SquareMeters
 * SquareInches
 * SquareFeet
+* SquareMiles
+* SquareKilometers
 * Acres
 
 ### Volume

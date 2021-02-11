@@ -180,6 +180,7 @@ int main(){
   assert(86400_s == 1_dy);
   assert(220_yd == Furlong(1));
   assert(Fortnight(1)==14_dy);
+  assert(SquareMiles(1)==Acres(640));
 
   // speed = distance / time
   MPH mph = 100_mi / 8_hr;
@@ -244,6 +245,7 @@ int main(){
   assert(Radians(20)/Seconds(10) == RadiansPerSecond(2));
   assert(6050_J / 5_us == 1.21_GW);
   assert(11_mi / 450_s == 88_mph);
+  assert(2_km * 2_km == SquareKilometers(4));
 
   // trig
   cout << "sin(180_deg): " << sin(180_deg) << "\n";

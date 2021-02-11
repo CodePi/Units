@@ -314,10 +314,12 @@ GEN_LITERAL(_mi, Miles)
 
 ///////
 // Area
-using SquareMeters = Unit<Area,Base>;
-using SquareInches = Unit<Area,RatioProd<Inches,Inches>>;
-using SquareFeet   = Unit<Area,RatioProd<Feet,Feet>>;
-using Acres        = Unit<Area,RatioProd<SquareFeet,Ratio<43560>>>;
+using SquareMeters     = Unit<Area,Base>;
+using SquareInches     = Unit<Area,RatioProd<Inches,Inches>>;
+using SquareFeet       = Unit<Area,RatioProd<Feet,Feet>>;
+using SquareMiles      = Unit<Area,RatioProd<Miles,Miles>>;
+using SquareKilometers = Unit<Area,RatioProd<Kilometers,Kilometers>>;
+using Acres            = Unit<Area,RatioProd<SquareFeet,Ratio<43560>>>;
 
 /////////
 // Volume
