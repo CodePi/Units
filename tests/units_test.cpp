@@ -289,6 +289,12 @@ int main(){
   // extreme example
   assert(Angstroms(1)*Angstroms(1)*Angstroms(1)==CubicMeters(1e-30));
 
+  // Smoots and football fields
+  using Smoots = Unit<Distance,Ratio<1702,1000>>;
+  assert(Smoots(1).approx(Meters(1.702)));
+  using FootballFields = Unit<Distance, RatioProd<Yards,Ratio<100>>>;
+  assert(FootballFields(1)==Yards(100));
+
   // these shouldn't compile
   //Feet f = 10;               // implicit conversion not allowed
   //double d = Feet(10);       // implicit conversion not allowed
