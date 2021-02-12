@@ -53,7 +53,7 @@ New units are easy to add.  For existing categories, such as `Distance`, say you
 is exactly 1.702m.  Meters are the base unit for Distance.  So to add Smoots, you need a ratio that when multiplied
 by a value in Smoots, you get the equivalent value in Meters.  Use the following format: 
 ```c++
-using Smoots = Unit<Distance,Ratio<1702,1000>>;
+using Smoots = Unit<Distance, Ratio<1702,1000>>;
 ```
 Alternatively, if the most similar unit is not the base unit, you can combine multiple ratios.  Say you wanted to add
 a new unit called `FootballFields`.  A football field is exactly 100 yards.  So you can combine the ratio for yards and
