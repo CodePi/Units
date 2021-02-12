@@ -12,3 +12,5 @@ if(${eigen_include_set})
     add_executable(eigen_units_test eigen_units_test.cpp)
     target_include_directories(eigen_units_test PUBLIC ${EIGEN3_INCLUDE_DIRS})
 endif()
+
+add_executable(units_coords units_coords.cpp)

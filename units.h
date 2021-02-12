@@ -93,6 +93,10 @@ public:
     if(offset!=0) m_val += offset;
   }
 
+  void set(FloatType val){
+    m_val = val;
+  }
+
   ///////////////////////
   // arithmetic operators
 
