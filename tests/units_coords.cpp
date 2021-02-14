@@ -17,19 +17,19 @@ struct Pos3d{
 
   Pos3d()=default;
 
-  template <typename Uo>
-  Pos3d(const Uo& other) { set(other); }
+  template <typename Po>
+  Pos3d(const Po& other) { set(other); }
 
   Pos3d(FloatType a,FloatType b,FloatType c){ set(a,b,c); }
 
-  template <typename Uo>
-  Pos3d operator=(const Uo& other) { set(other); return *this; }
+  template <typename Po>
+  Pos3d operator=(const Po& other) { set(other); return *this; }
 
   void set(FloatType a_, FloatType b_, FloatType c_){ v1.set(a_); v2.set(b_); v3.set(c_); }
   void set(U1 a_, U2 b_, U3 c_){ v1.set(a_); v2.set(b_); v3.set(c_); }
 
-  template <typename Uo>
-  void set(const Uo& other) {
+  template <typename Po>
+  void set(const Po& other) {
     convert_from(other);
   }
 
@@ -42,14 +42,14 @@ struct Pos3d{
   U2 v2;
   U3 v3;
 
-  template <typename Uo> Pos3d  operator+(const Uo& other)   const{ auto out = Pos3d(other); out.v1 += v1; out.v2 += v2; out.v3 += v3;      return out; }
-  template <typename Uo> Pos3d  operator-(const Uo& other)   const{ auto out = Pos3d(other); out.v1 -= v1; out.v2 -= v2; out.v3 -= v3;      return out; }
-  template <typename Uo> Pos3d  operator*(FloatType scalar)  const{ auto out = *this; out.v1 *= scalar; out.v2 *= scalar; out.v3 *= scalar; return out; }
-  template <typename Uo> Pos3d  operator/(FloatType scalar)  const{ auto out = *this; out.v1 /= scalar; out.v2 /= scalar; out.v3 /= scalar; return out; }
-  template <typename Uo> Pos3d& operator+=(const Uo& other)  { *this = *this + other;  return *this; }
-  template <typename Uo> Pos3d& operator-=(const Uo& other)  { *this = *this - other;  return *this; }
-  template <typename Uo> Pos3d& operator*=(FloatType scalar) { *this = *this * scalar; return *this; }
-  template <typename Uo> Pos3d& operator/=(FloatType scalar) { *this = *this / scalar; return *this; }
+  template <typename Po> Pos3d  operator+(const Po& other)   const{ auto out = Pos3d(other); out.v1 += v1; out.v2 += v2; out.v3 += v3;      return out; }
+  template <typename Po> Pos3d  operator-(const Po& other)   const{ auto out = Pos3d(other); out.v1 -= v1; out.v2 -= v2; out.v3 -= v3;      return out; }
+  template <typename Po> Pos3d& operator+=(const Po& other)  { *this = *this + other;  return *this; }
+  template <typename Po> Pos3d& operator-=(const Po& other)  { *this = *this - other;  return *this; }
+  Pos3d  operator*(FloatType scalar)  const{ auto out = *this; out.v1 *= scalar; out.v2 *= scalar; out.v3 *= scalar; return out; }
+  Pos3d  operator/(FloatType scalar)  const{ auto out = *this; out.v1 /= scalar; out.v2 /= scalar; out.v3 /= scalar; return out; }
+  Pos3d& operator*=(FloatType scalar) { *this = *this * scalar; return *this; }
+  Pos3d& operator/=(FloatType scalar) { *this = *this / scalar; return *this; }
 
 private:
   static constexpr double squared(double v) noexcept {return v*v;};
@@ -59,18 +59,18 @@ private:
   static constexpr double WGS84_B = WGS84_A*(1-WGS84_F);
   static constexpr double WGS84_E2 = 1 - squared(1-WGS84_F);
 
-  template <typename Uo, typename std::enable_if<std::is_same<C, typename Uo::C>::value, bool>::type = true>
-  void convert_from(const Uo& other){ set(other.v1,other.v2,other.v3); }
+  template <typename Po, typename std::enable_if<std::is_same<C, typename Po::C>::value, bool>::type = true>
+  void convert_from(const Po& other){ set(other.v1,other.v2,other.v3); }
 
-  template <typename Uo, typename std::enable_if<std::is_same<typename Uo::C, LLACat>::value && std::is_same<C, ECEFCat>::value, bool>::type = true>
-  void convert_from(const Uo& other){
+  template <typename Po, typename std::enable_if<std::is_same<typename Po::C, LLACat>::value && std::is_same<C, ECEFCat>::value, bool>::type = true>
+  void convert_from(const Po& other){
     Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters> ecef;
     lla2ecef(other, ecef);
     *this = ecef;
   }
 
-  template <typename Uo, typename std::enable_if<std::is_same<typename Uo::C, ECEFCat>::value && std::is_same<C, LLACat>::value, bool>::type = true>
-  void convert_from(const Uo& other){
+  template <typename Po, typename std::enable_if<std::is_same<typename Po::C, ECEFCat>::value && std::is_same<C, LLACat>::value, bool>::type = true>
+  void convert_from(const Po& other){
     Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters> lla;
     ecef2lla(other, lla);
     *this = lla;
