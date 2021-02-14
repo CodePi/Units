@@ -133,20 +133,23 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   using Pos3d<ENUCat,U,U,U>::Pos3d;
   template <typename U1, typename U2>
   ENU(const ECEF<U1>& pos, const ECEF<U2>& origin){
+    // offset
+    Units::Meters x = pos.x()-origin.x();
+    Units::Meters y = pos.y()-origin.y();
+    Units::Meters z = pos.z()-origin.z();
+    // rotate
     LLA<Units::Radians,Units::Meters> lla = origin;
     double clat = cos(lla.lat());
     double slat = sin(lla.lat());
     double clon = cos(lla.lng());
     double slon = sin(lla.lng());
-    Units::Meters x = pos.x()-origin.x();
-    Units::Meters y = pos.y()-origin.y();
-    Units::Meters z = pos.z()-origin.z();
     this->x() = -x*slon      + y*clon;
     this->y() = -x*slat*clon - y*slat*slon + z*clat;
     this->z() =  x*clat*clon + y*clat*slon + z*slat;
   }
   template <typename PosU1, typename U2>
   PosU1 get(const ECEF<U2>& origin){
+    // rotate
     LLA<Units::Radians,Units::Meters> lla = origin;
     double clat = cos(lla.lat());
     double slat = sin(lla.lat());
@@ -155,6 +158,7 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
     Units::Meters xr = -x()*slon - y()*slat*clon + z()*clat*clon;
     Units::Meters yr =  x()*clon - y()*slat*slon + z()*clat*slon;
     Units::Meters zr =           + y()*clat      + z()*slat;
+    // offset
     ECEF<Units::Meters> pos;
     pos.x() = origin.x() + xr;
     pos.y() = origin.y() + yr;
