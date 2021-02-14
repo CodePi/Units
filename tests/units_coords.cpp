@@ -33,15 +33,14 @@ struct Pos3d{
     convert_from(other);
   }
 
+  // direct access to values
   FloatType* data(){ return (FloatType*)&v1; };
 
+  // make sure all values have same FloatType
   static_assert(std::is_same<typename U1::FloatType,typename U2::FloatType>::value,"");
   static_assert(std::is_same<typename U1::FloatType,typename U3::FloatType>::value,"");
 
-  U1 v1;
-  U2 v2;
-  U3 v3;
-
+  // arithmetic operators
   template <typename Po> Pos3d  operator+(const Po& other)   const{ auto out = Pos3d(other); out.v1 += v1; out.v2 += v2; out.v3 += v3;      return out; }
   template <typename Po> Pos3d  operator-(const Po& other)   const{ auto out = Pos3d(other); out.v1 -= v1; out.v2 -= v2; out.v3 -= v3;      return out; }
   template <typename Po> Pos3d& operator+=(const Po& other)  { *this = *this + other;  return *this; }
@@ -50,6 +49,24 @@ struct Pos3d{
   Pos3d  operator/(FloatType scalar)  const{ auto out = *this; out.v1 /= scalar; out.v2 /= scalar; out.v3 /= scalar; return out; }
   Pos3d& operator*=(FloatType scalar) { *this = *this * scalar; return *this; }
   Pos3d& operator/=(FloatType scalar) { *this = *this / scalar; return *this; }
+
+  // distance (TODO: Block ENU?)
+  template <typename Po>
+  Units::Meters distance(const Po& other){
+    Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> a = *this;
+    Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> b = other;
+    auto d = a-b;
+    double x = d.v1.get();
+    double y = d.v2.get();
+    double z = d.v3.get();
+    double dist = sqrt(x*x+y*y+z*z);
+    return Units::Meters(dist);
+  }
+
+  // values
+  U1 v1;
+  U2 v2;
+  U3 v3;
 
 private:
   static constexpr double squared(double v) noexcept {return v*v;};
@@ -189,8 +206,6 @@ int main(){
   LLA_ddm lla_ddm2 = ecef_m;
   ECEF_m ecef_m2 = lla_ddm2;
 
-  //TODO: add pos arithmetic and distance
-
   std::cout.precision(10);
   std::cout << lla_ddm.lat() << " " << lla_ddm.lng() << " " << lla_ddm.alt() << "\n";
   std::cout << ecef_m.x() << " " << ecef_m.y() << " " << ecef_m.z() << "\n";
@@ -206,6 +221,10 @@ int main(){
   std::cout << lla_ddm_other.lat() << " " << lla_ddm_other.lng() << " " << lla_ddm_other.alt() << "\n";
   std::cout << enu_m.x() << " " << enu_m.y() << " " << enu_m.z() << "\n";
   std::cout << lla_ddm_other2.lat() << " " << lla_ddm_other2.lng() << " " << lla_ddm_other2.alt() << "\n";
+  std::cout << "\n";
+
+  // distance
+  std::cout << lla_ddm.distance(lla_ddm_other) << "\n";
   std::cout << "\n";
 
   // wtf
