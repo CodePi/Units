@@ -3,6 +3,8 @@
 //
 
 #include "../units.h"
+#include <iostream>
+#include <iomanip>
 
 template <typename U=Units::Meters>
 struct ECEF{
@@ -57,7 +59,6 @@ struct LLA{
   FloatType* data(){ return (FloatType*)this; };
 
 };
-// 42.346735, -71.097223
 
 using ECEF_m = ECEF<Units::Meters>;
 using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
@@ -91,6 +92,7 @@ int main(){
   LLA_rrm llh_rrm = lla_ddm;
 
   ECEF_m ecef_m2 = lla2ecef(lla_ddm);
+  std::cout.precision(7);
   std::cout << ecef_m.x << " " << ecef_m.y << " " << ecef_m.z << "\n";
   std::cout << ecef_m2.x << " " << ecef_m2.y << " " << ecef_m2.z << "\n";
 }
