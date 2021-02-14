@@ -108,7 +108,7 @@ LLA_rrm ecef2lla(const ECEF_m& ecef){
 
 int main(){
   using namespace Units::literals;
-  LLA_ddm lla_ddm = {42.346735, -71.097223, 0};
+  LLA_ddm lla_ddm = {42.346735, -71.097223, 300};
   ECEF_m ecef_m = lla2ecef(lla_ddm);
   LLA_ddm lla_ddm2 = ecef2lla(ecef_m);
   ECEF_m ecef_m2 = lla2ecef(lla_ddm2);
