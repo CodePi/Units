@@ -160,12 +160,14 @@ using LLA_rrm = LLA<Units::Radians, Units::Meters>;
 template <typename U>
 struct ENU : public Pos3d<ENUCat,U,U,U> {
   using Pos3d<ENUCat,U,U,U>::Pos3d;
-  template <typename U1, typename U2>
-  ENU(const ECEF<U1>& pos, const ECEF<U2>& origin){
-    // offset
-    Units::Meters x = pos.x()-origin.x();
-    Units::Meters y = pos.y()-origin.y();
-    Units::Meters z = pos.z()-origin.z();
+  template <typename P1, typename P2>
+  ENU(const P1& pos, const P2& origin){
+    // remove offset
+    ECEF_m ecef = pos;
+    ECEF_m ecefo = origin;
+    Units::Meters x = ecef.x()-ecefo.x();
+    Units::Meters y = ecef.y()-ecefo.y();
+    Units::Meters z = ecef.z()-ecefo.z();
     // rotate
     LLA<Units::Radians,Units::Meters> lla = origin;
     double clat = cos(lla.lat());
@@ -176,8 +178,8 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
     this->y() = -x*slat*clng - y*slat*slng + z*clat;
     this->z() =  x*clat*clng + y*clat*slng + z*slat;
   }
-  template <typename PosU1, typename U2>
-  PosU1 get(const ECEF<U2>& origin){
+  template <typename P1, typename P2>
+  P1 get(const P2& origin){
     // rotate
     LLA_rrm lla = origin;
     double clat = cos(lla.lat());
@@ -188,7 +190,7 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
     pos.x() = -x()*slng - y()*slat*clng + z()*clat*clng;
     pos.y() =  x()*clng - y()*slat*slng + z()*clat*slng;
     pos.z() =           + y()*clat      + z()*slat;
-    // offset
+    // add offset
     return pos + origin;
   }
   U& x(){return this->v1;}
@@ -215,9 +217,8 @@ int main(){
 
   // enu
   LLA_ddm lla_ddm_other = {42.446735, -71.197223, 100};
-  //TODO: get rid of need for wrapper
-  ENU_m enu_m{ECEF_m(lla_ddm_other), ECEF_m(lla_ddm)};
-  LLA_ddm lla_ddm_other2 = enu_m.get<LLA_ddm>(ECEF_m(lla_ddm));
+  ENU_m enu_m(lla_ddm_other, lla_ddm);
+  LLA_ddm lla_ddm_other2 = enu_m.get<LLA_ddm>(lla_ddm);
   std::cout << lla_ddm_other.lat() << " " << lla_ddm_other.lng() << " " << lla_ddm_other.alt() << "\n";
   std::cout << enu_m.x() << " " << enu_m.y() << " " << enu_m.z() << "\n";
   std::cout << lla_ddm_other2.lat() << " " << lla_ddm_other2.lng() << " " << lla_ddm_other2.alt() << "\n";
