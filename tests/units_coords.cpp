@@ -113,7 +113,7 @@ int main(){
   LLA_ddm lla_ddm2 = ecef2lla(ecef_m);
   ECEF_m ecef_m2 = lla2ecef(lla_ddm2);
 
-  std::cout.precision(8);
+  std::cout.precision(10);
   std::cout << lla_ddm.lat << " " << lla_ddm.lng << " " << lla_ddm.alt << "\n";
   std::cout << ecef_m.x << " " << ecef_m.y << " " << ecef_m.z << "\n";
   std::cout << lla_ddm2.lat << " " << lla_ddm2.lng << " " << lla_ddm2.alt << "\n";
