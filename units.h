@@ -112,6 +112,10 @@ public:
     return Unit(m_val-Unit(other).get());
   }
 
+  // Unary +/-
+  Unit operator+() const{ return Unit(m_val); }
+  Unit operator-() const{ return Unit(-m_val); }
+
   // FloatTyoe = Unit / Unit
   template<typename R2, typename FT2>
   FloatType operator/(Unit<C,R2,FT2> other) const{

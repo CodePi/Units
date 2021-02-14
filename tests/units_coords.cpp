@@ -133,18 +133,32 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   using Pos3d<ENUCat,U,U,U>::Pos3d;
   template <typename U1, typename U2>
   ENU(const ECEF<U1>& pos, const ECEF<U2>& origin){
-    x() = pos.x()-origin.x();
-    y() = pos.y()-origin.y();
-    z() = pos.z()-origin.z();
-    //TODO: compute and apply rotation
+    Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters> lla = origin;
+    double clat = cos(lla.v1);
+    double slat = sin(lla.v1);
+    double clon = cos(lla.v2);
+    double slon = sin(lla.v2);
+    Units::Meters x = pos.x()-origin.x();
+    Units::Meters y = pos.y()-origin.y();
+    Units::Meters z = pos.z()-origin.z();
+    this->x() = -x*slon      + y*clon;
+    this->y() = -x*slat*clon - y*slat*slon + z*clat;
+    this->z() =  x*clat*clon + y*clat*slon + z*slat;
   }
   template <typename PosU1, typename U2>
   PosU1 get(const ECEF<U2>& origin){
-    //TODO: apply rotation
+    LLA<Units::Radians,Units::Meters> lla = origin;
+    double clat = cos(lla.v1);
+    double slat = sin(lla.v1);
+    double clon = cos(lla.v2);
+    double slon = sin(lla.v2);
+    Units::Meters xr = -x()*slon - y()*slat*clon + z()*clat*clon;
+    Units::Meters yr =  x()*clon - y()*slat*slon + z()*clat*slon;
+    Units::Meters zr =           + y()*clat      + z()*slat;
     ECEF<Units::Meters> pos;
-    pos.x() = origin.x() + x();
-    pos.y() = origin.y() + y();
-    pos.z() = origin.z() + z();
+    pos.x() = origin.x() + xr;
+    pos.y() = origin.y() + yr;
+    pos.z() = origin.z() + zr;
     return pos;
   }
   U& x(){return this->v1;}
@@ -173,6 +187,7 @@ int main(){
   std::cout << ecef_m.x() << " " << ecef_m.y() << " " << ecef_m.z() << "\n";
   std::cout << lla_ddm2.lat() << " " << lla_ddm2.lng() << " " << lla_ddm2.alt() << "\n";
   std::cout << ecef_m2.x() << " " << ecef_m2.y() << " " << ecef_m2.z() << "\n";
+  std::cout << "\n";
 
   // enu
   LLA_ddm lla_ddm_other = {42.446735, -71.197223, 100};
@@ -180,7 +195,9 @@ int main(){
   ENU_m enu_m{ECEF_m(lla_ddm_other), ECEF_m(lla_ddm)};
   LLA_ddm lla_ddm_other2 = enu_m.get<LLA_ddm>(ECEF_m(lla_ddm));
   std::cout << lla_ddm_other.lat() << " " << lla_ddm_other.lng() << " " << lla_ddm_other.alt() << "\n";
+  std::cout << enu_m.x() << " " << enu_m.y() << " " << enu_m.z() << "\n";
   std::cout << lla_ddm_other2.lat() << " " << lla_ddm_other2.lng() << " " << lla_ddm_other2.alt() << "\n";
+  std::cout << "\n";
 
   // wtf
   LLA<Units::Radians, Units::Furlongs> wtf = ecef_m;
