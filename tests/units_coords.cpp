@@ -140,11 +140,11 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   }
   template <typename PosU1, typename U2>
   PosU1 get(const ECEF<U2>& origin){
-    PosU1 pos;
     //TODO: apply rotation
+    ECEF<Units::Meters> pos;
     pos.x() = origin.x() + x();
-    pos.x() = origin.x() + x();
-    pos.x() = origin.x() + x();
+    pos.y() = origin.y() + y();
+    pos.z() = origin.z() + z();
     return pos;
   }
   U& x(){return this->v1;}
@@ -166,6 +166,8 @@ int main(){
   LLA_ddm lla_ddm2 = ecef_m;
   ECEF_m ecef_m2 = lla_ddm2;
 
+  //TODO: add pos arithmetic and distance
+
   std::cout.precision(10);
   std::cout << lla_ddm.lat() << " " << lla_ddm.lng() << " " << lla_ddm.alt() << "\n";
   std::cout << ecef_m.x() << " " << ecef_m.y() << " " << ecef_m.z() << "\n";
@@ -175,7 +177,10 @@ int main(){
   // enu
   LLA_ddm lla_ddm_other = {42.446735, -71.197223, 100};
   //TODO: get rid of need for wrapper
-  ENU_m(ECEF_m(lla_ddm_other), ECEF_m(lla_ddm));
+  ENU_m enu_m{ECEF_m(lla_ddm_other), ECEF_m(lla_ddm)};
+  LLA_ddm lla_ddm_other2 = enu_m.get<LLA_ddm>(ECEF_m(lla_ddm));
+  std::cout << lla_ddm_other.lat() << " " << lla_ddm_other.lng() << " " << lla_ddm_other.alt() << "\n";
+  std::cout << lla_ddm_other2.lat() << " " << lla_ddm_other2.lng() << " " << lla_ddm_other2.alt() << "\n";
 
   // wtf
   LLA<Units::Radians, Units::Furlongs> wtf = ecef_m;
