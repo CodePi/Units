@@ -23,7 +23,7 @@ struct Pos3d{
   Pos3d(FloatType a,FloatType b,FloatType c){ set(a,b,c); }
 
   template <typename Uo>
-  Pos3d operator=(const Uo& ecef2) { set(ecef2); return *this; }
+  Pos3d operator=(const Uo& other) { set(other); return *this; }
 
   void set(FloatType a_, FloatType b_, FloatType c_){ v1.set(a_); v2.set(b_); v3.set(c_); }
   void set(U1 a_, U2 b_, U3 c_){ v1.set(a_); v2.set(b_); v3.set(c_); }
