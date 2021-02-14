@@ -64,9 +64,12 @@ using ECEF_m = ECEF<Units::Meters>;
 using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
 using LLA_rrm = LLA<Units::Radians, Units::Meters>;
 
-double squared(double v) noexcept {return v*v;};
+inline double squared(double v) noexcept {return v*v;};
+inline double cubed(double v) noexcept {return v*v*v;};
 static const double WGS84_A = 6378137;
-static const double WGS84_E2 = 1 - squared(1-1/298.257223563);
+static const double WGS84_F = 1/298.257223563;
+static const double WGS84_B = WGS84_A*(1-WGS84_F);
+static const double WGS84_E2 = 1 - squared(1-WGS84_F);
 
 ECEF_m lla2ecef(const LLA_rrm& lla){
   double clat = cos(lla.lat);
@@ -83,16 +86,36 @@ ECEF_m lla2ecef(const LLA_rrm& lla){
   return ecef;
 }
 
+LLA_rrm ecef2lla(const ECEF_m& ecef){
+  double x = ecef.x.get();
+  double y = ecef.y.get();
+  double z = ecef.z.get();
+
+  double a = WGS84_A;
+  double e2 = WGS84_E2;
+  double b = WGS84_B;
+  double ep = sqrt((a*a - b*b)/(b*b));
+  double p = sqrt(x*x+y*y);
+  double th = atan2(a*z, b*p);
+
+  double lon = atan2(y,x);
+  double lat = atan2(z + ep*ep*b*cubed(sin(th)), p - e2*a*cubed(cos(th)));
+  double N = WGS84_A / sqrt(1.0 - WGS84_E2 * squared(sin(lat)));
+  double alt = p / cos(lat) - N;
+
+  return {lat, lon, alt};
+}
+
 int main(){
   using namespace Units::literals;
-  ECEF_m ecef_m = {1529476, -4466529, 4274147};
   LLA_ddm lla_ddm = {42.346735, -71.097223, 0};
+  ECEF_m ecef_m = lla2ecef(lla_ddm);
+  LLA_ddm lla_ddm2 = ecef2lla(ecef_m);
+  ECEF_m ecef_m2 = lla2ecef(lla_ddm2);
 
-  ECEF<Units::Feet> ecef_ft = ecef_m;
-  LLA_rrm llh_rrm = lla_ddm;
-
-  ECEF_m ecef_m2 = lla2ecef(lla_ddm);
-  std::cout.precision(7);
+  std::cout.precision(8);
+  std::cout << lla_ddm.lat << " " << lla_ddm.lng << " " << lla_ddm.alt << "\n";
   std::cout << ecef_m.x << " " << ecef_m.y << " " << ecef_m.z << "\n";
+  std::cout << lla_ddm2.lat << " " << lla_ddm2.lng << " " << lla_ddm2.alt << "\n";
   std::cout << ecef_m2.x << " " << ecef_m2.y << " " << ecef_m2.z << "\n";
 }
