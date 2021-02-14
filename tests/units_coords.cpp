@@ -12,6 +12,7 @@ struct ECEF{
 
   using FloatType = typename U::FloatType;
 
+  ECEF() = default;
   ECEF(FloatType x_, FloatType y_, FloatType z_) { set(x_,y_,z_); }
 
   template <typename U2>
@@ -62,6 +63,25 @@ using ECEF_m = ECEF<Units::Meters>;
 using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
 using LLA_rrm = LLA<Units::Radians, Units::Meters>;
 
+double squared(double v) noexcept {return v*v;};
+static const double WGS84_A = 6378137;
+static const double WGS84_E2 = 1 - squared(1-1/298.257223563);
+
+ECEF_m lla2ecef(const LLA_rrm& lla){
+  double clat = cos(lla.lat);
+  double slat = sin(lla.lat);
+  double clon = cos(lla.lng);
+  double slon = sin(lla.lng);
+
+  double N = WGS84_A / sqrt(1.0 - WGS84_E2 * slat * slat);
+
+  ECEF_m ecef;
+  ecef.x.set((N + lla.alt.get()) * clat * clon);
+  ecef.y.set((N + lla.alt.get()) * clat * slon);
+  ecef.z.set((N * (1.0 - WGS84_E2) + lla.alt.get()) * slat);
+  return ecef;
+}
+
 int main(){
   using namespace Units::literals;
   ECEF_m ecef_m = {1529476, -4466529, 4274147};
@@ -69,4 +89,8 @@ int main(){
 
   ECEF<Units::Feet> ecef_ft = ecef_m;
   LLA_rrm llh_rrm = lla_ddm;
+
+  ECEF_m ecef_m2 = lla2ecef(lla_ddm);
+  std::cout << ecef_m.x << " " << ecef_m.y << " " << ecef_m.z << "\n";
+  std::cout << ecef_m2.x << " " << ecef_m2.y << " " << ecef_m2.z << "\n";
 }
