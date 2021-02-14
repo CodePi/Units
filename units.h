@@ -100,37 +100,26 @@ public:
   ///////////////////////
   // arithmetic operators
 
-  // Unit = Unit + Unit
-  template<typename R2, typename FT2>
-  Unit operator+(Unit<C,R2,FT2> other) const{
-    return Unit(m_val+Unit(other).get());
-  }
+  // Unit = Unit +- Unit
+  template<typename R2, typename FT2> Unit operator+(Unit<C,R2,FT2> other) const{ return Unit(m_val+Unit(other).get()); }
+  template<typename R2, typename FT2> Unit operator-(Unit<C,R2,FT2> other) const{ return Unit(m_val-Unit(other).get()); }
 
-  // Unit = Unit - Unit
-  template<typename R2, typename FT2>
-  Unit operator-(Unit<C,R2,FT2> other) const{
-    return Unit(m_val-Unit(other).get());
-  }
+  // Unit = Unit */ FloatType
+  Unit operator*(FloatType scalar) const{ return Unit(m_val*scalar); }
+  Unit operator/(FloatType scalar) const{ return Unit(m_val/scalar); }
 
-  // Unary +/-
+  // FloatType = Unit / Unit
+  template<typename R2, typename FT2> FloatType operator/(Unit<C,R2,FT2> other) const{ return m_val / Unit(other).get(); }
+
+  // Unary operators +-
   Unit operator+() const{ return Unit(m_val); }
   Unit operator-() const{ return Unit(-m_val); }
 
-  // FloatTyoe = Unit / Unit
-  template<typename R2, typename FT2>
-  FloatType operator/(Unit<C,R2,FT2> other) const{
-    return m_val / Unit(other).get();
-  }
-
-  // Unit = Unit * FloatTyoe
-  Unit operator*(FloatType scalar) const{
-    return Unit(m_val*scalar);
-  }
-
-  // Unit = Unit / FloatTyoe
-  Unit operator/(FloatType scalar) const{
-    return Unit(m_val/scalar);
-  }
+  // operators += -= *= /=
+  template<typename R2, typename FT2> Unit& operator+=(Unit<C,R2,FT2> other){ m_val += Unit(other).get(); return *this; }
+  template<typename R2, typename FT2> Unit& operator-=(Unit<C,R2,FT2> other){ m_val -= Unit(other).get(); return *this; }
+  template<typename R2, typename FT2> Unit& operator*=(FloatType other)     { m_val *= other; return *this; }
+  template<typename R2, typename FT2> Unit& operator/=(FloatType other)     { m_val /= other; return *this; }
 
   ////////////////////
   // compare operators

@@ -42,6 +42,15 @@ struct Pos3d{
   U2 v2;
   U3 v3;
 
+  template <typename Uo> Pos3d  operator+(const Uo& other)   const{ auto out = Pos3d(other); out.v1 += v1; out.v2 += v2; out.v3 += v3;      return out; }
+  template <typename Uo> Pos3d  operator-(const Uo& other)   const{ auto out = Pos3d(other); out.v1 -= v1; out.v2 -= v2; out.v3 -= v3;      return out; }
+  template <typename Uo> Pos3d  operator*(FloatType scalar)  const{ auto out = *this; out.v1 *= scalar; out.v2 *= scalar; out.v3 *= scalar; return out; }
+  template <typename Uo> Pos3d  operator/(FloatType scalar)  const{ auto out = *this; out.v1 /= scalar; out.v2 /= scalar; out.v3 /= scalar; return out; }
+  template <typename Uo> Pos3d& operator+=(const Uo& other)  { *this = *this + other;  return *this; }
+  template <typename Uo> Pos3d& operator-=(const Uo& other)  { *this = *this - other;  return *this; }
+  template <typename Uo> Pos3d& operator*=(FloatType scalar) { *this = *this * scalar; return *this; }
+  template <typename Uo> Pos3d& operator/=(FloatType scalar) { *this = *this / scalar; return *this; }
+
 private:
   static constexpr double squared(double v) noexcept {return v*v;};
   static constexpr double cubed(double v) noexcept {return v*v*v;};
@@ -116,6 +125,7 @@ struct ECEF : public Pos3d<ECEFCat,U,U,U> {
   const U& y() const{return this->v2;}
   const U& z() const{return this->v3;}
 };
+using ECEF_m = ECEF<Units::Meters>;
 
 template <typename Ull, typename Ua>
 struct LLA : public Pos3d<LLACat,Ull,Ull,Ua>{
@@ -127,6 +137,8 @@ struct LLA : public Pos3d<LLACat,Ull,Ull,Ua>{
   const Ull& lng() const{return this->v2;}
   const Ua& alt() const{return this->v3;}
 };
+using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
+using LLA_rrm = LLA<Units::Radians, Units::Meters>;
 
 template <typename U>
 struct ENU : public Pos3d<ENUCat,U,U,U> {
@@ -150,20 +162,17 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   template <typename PosU1, typename U2>
   PosU1 get(const ECEF<U2>& origin){
     // rotate
-    LLA<Units::Radians,Units::Meters> lla = origin;
+    LLA_rrm lla = origin;
     double clat = cos(lla.lat());
     double slat = sin(lla.lat());
     double clng = cos(lla.lng());
     double slng = sin(lla.lng());
-    ECEF<Units::Meters> pos;
+    ECEF_m pos;
     pos.x() = -x()*slng - y()*slat*clng + z()*clat*clng;
     pos.y() =  x()*clng - y()*slat*slng + z()*clat*slng;
     pos.z() =           + y()*clat      + z()*slat;
     // offset
-    pos.x() = pos.x() + origin.x();
-    pos.y() = pos.y() + origin.y();
-    pos.z() = pos.z() + origin.z();
-    return pos;
+    return pos + origin;
   }
   U& x(){return this->v1;}
   U& y(){return this->v2;}
@@ -172,11 +181,7 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   const U& y() const{return this->v2;}
   const U& z() const{return this->v3;}
 };
-
-using ECEF_m = ECEF<Units::Meters>;
 using ENU_m = ENU<Units::Meters>;
-using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
-using LLA_rrm = LLA<Units::Radians, Units::Meters>;
 
 int main(){
   LLA_ddm lla_ddm = {42.346735, -71.097223, 300};
