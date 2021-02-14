@@ -95,13 +95,13 @@ private:
     double alt = lla.v3.get();
     double clat = cos(lla.v1);
     double slat = sin(lla.v1);
-    double clon = cos(lla.v2);
-    double slon = sin(lla.v2);
+    double clng = cos(lla.v2);
+    double slng = sin(lla.v2);
 
     double N = WGS84_A / sqrt(1.0 - WGS84_E2 * slat * slat);
 
-    ecef.v1.set((N + alt) * clat * clon);
-    ecef.v2.set((N + alt) * clat * slon);
+    ecef.v1.set((N + alt) * clat * clng);
+    ecef.v2.set((N + alt) * clat * slng);
     ecef.v3.set((N * (1.0 - WGS84_E2) + alt) * slat);
   }
 };
@@ -141,11 +141,11 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
     LLA<Units::Radians,Units::Meters> lla = origin;
     double clat = cos(lla.lat());
     double slat = sin(lla.lat());
-    double clon = cos(lla.lng());
-    double slon = sin(lla.lng());
-    this->x() = -x*slon      + y*clon;
-    this->y() = -x*slat*clon - y*slat*slon + z*clat;
-    this->z() =  x*clat*clon + y*clat*slon + z*slat;
+    double clng = cos(lla.lng());
+    double slng = sin(lla.lng());
+    this->x() = -x*slng      + y*clng;
+    this->y() = -x*slat*clng - y*slat*slng + z*clat;
+    this->z() =  x*clat*clng + y*clat*slng + z*slat;
   }
   template <typename PosU1, typename U2>
   PosU1 get(const ECEF<U2>& origin){
@@ -153,16 +153,16 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
     LLA<Units::Radians,Units::Meters> lla = origin;
     double clat = cos(lla.lat());
     double slat = sin(lla.lat());
-    double clon = cos(lla.lng());
-    double slon = sin(lla.lng());
-    Units::Meters xr = -x()*slon - y()*slat*clon + z()*clat*clon;
-    Units::Meters yr =  x()*clon - y()*slat*slon + z()*clat*slon;
-    Units::Meters zr =           + y()*clat      + z()*slat;
-    // offset
+    double clng = cos(lla.lng());
+    double slng = sin(lla.lng());
     ECEF<Units::Meters> pos;
-    pos.x() = origin.x() + xr;
-    pos.y() = origin.y() + yr;
-    pos.z() = origin.z() + zr;
+    pos.x() = -x()*slng - y()*slat*clng + z()*clat*clng;
+    pos.y() =  x()*clng - y()*slat*slng + z()*clat*slng;
+    pos.z() =           + y()*clat      + z()*slat;
+    // offset
+    pos.x() = pos.x() + origin.x();
+    pos.y() = pos.y() + origin.y();
+    pos.z() = pos.z() + origin.z();
     return pos;
   }
   U& x(){return this->v1;}
