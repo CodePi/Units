@@ -118,8 +118,8 @@ public:
   // operators += -= *= /=
   template<typename R2, typename FT2> Unit& operator+=(Unit<C,R2,FT2> other){ m_val += Unit(other).get(); return *this; }
   template<typename R2, typename FT2> Unit& operator-=(Unit<C,R2,FT2> other){ m_val -= Unit(other).get(); return *this; }
-  template<typename R2, typename FT2> Unit& operator*=(FloatType other)     { m_val *= other; return *this; }
-  template<typename R2, typename FT2> Unit& operator/=(FloatType other)     { m_val /= other; return *this; }
+  Unit& operator*=(FloatType other)     { m_val *= other; return *this; }
+  Unit& operator/=(FloatType other)     { m_val /= other; return *this; }
 
   ////////////////////
   // compare operators

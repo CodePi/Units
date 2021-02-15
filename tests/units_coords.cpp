@@ -36,10 +36,6 @@ struct Pos3d{
   // direct access to values
   FloatType* data(){ return (FloatType*)&v1; };
 
-  // make sure all values have same FloatType
-  static_assert(std::is_same<typename U1::FloatType,typename U2::FloatType>::value,"");
-  static_assert(std::is_same<typename U1::FloatType,typename U3::FloatType>::value,"");
-
   // arithmetic operators
   template <typename Po> Pos3d  operator+(const Po& other)   const{ auto out = Pos3d(other); out.v1 += v1; out.v2 += v2; out.v3 += v3;      return out; }
   template <typename Po> Pos3d  operator-(const Po& other)   const{ auto out = Pos3d(other); out.v1 -= v1; out.v2 -= v2; out.v3 -= v3;      return out; }
@@ -130,6 +126,11 @@ private:
     ecef.v2.set((N + alt) * clat * slng);
     ecef.v3.set((N * (1.0 - WGS84_E2) + alt) * slat);
   }
+
+  // sanity checking...
+  // make sure all values have same FloatType
+  static_assert(std::is_same<typename U1::FloatType,typename U2::FloatType>::value,"");
+  static_assert(std::is_same<typename U1::FloatType,typename U3::FloatType>::value,"");
 };
 
 template <typename U>
@@ -141,6 +142,7 @@ struct ECEF : public Pos3d<ECEFCat,U,U,U> {
   const U& x() const{return this->v1;}
   const U& y() const{return this->v2;}
   const U& z() const{return this->v3;}
+  static_assert(std::is_same<typename U::C, Units::Distance>::value,"");
 };
 using ECEF_m = ECEF<Units::Meters>;
 
@@ -153,6 +155,8 @@ struct LLA : public Pos3d<LLACat,Ull,Ull,Ua>{
   const Ull& lat() const{return this->v1;}
   const Ull& lng() const{return this->v2;}
   const Ua& alt() const{return this->v3;}
+  static_assert(std::is_same<typename Ull::C, Units::Angle>::value,"");
+  static_assert(std::is_same<typename Ua::C, Units::Distance>::value,"");
 };
 using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
 using LLA_rrm = LLA<Units::Radians, Units::Meters>;
@@ -199,6 +203,7 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   const U& x() const{return this->v1;}
   const U& y() const{return this->v2;}
   const U& z() const{return this->v3;}
+  static_assert(std::is_same<typename U::C, Units::Distance>::value,"");
 };
 using ENU_m = ENU<Units::Meters>;
 
