@@ -6,14 +6,12 @@
 #include <iostream>
 #include <iomanip>
 
-struct ECEFCat{};
-struct LLACat{};
-struct ENUCat{};
+enum Category{ECEFCat, LLACat, ENUCat};
 
-template <typename C_, typename U1, typename U2, typename U3>
+template <Category C_, typename U1, typename U2, typename U3>
 struct Pos3d{
   using FloatType = typename U1::FloatType;
-  using C = C_;
+  static constexpr Category C = C_;
 
   Pos3d()=default;
 
@@ -72,17 +70,17 @@ private:
   static constexpr double WGS84_B = WGS84_A*(1-WGS84_F);
   static constexpr double WGS84_E2 = 1 - squared(1-WGS84_F);
 
-  template <typename Po, typename std::enable_if<std::is_same<C, typename Po::C>::value, bool>::type = true>
+  template <typename Po, typename std::enable_if<C==Po::C, bool>::type = true>
   void convert_from(const Po& other){ set(other.v1,other.v2,other.v3); }
 
-  template <typename Po, typename std::enable_if<std::is_same<typename Po::C, LLACat>::value && std::is_same<C, ECEFCat>::value, bool>::type = true>
+  template <typename Po, typename std::enable_if<Po::C==LLACat && C==ECEFCat, bool>::type = true>
   void convert_from(const Po& other){
     Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters> ecef;
     lla2ecef(other, ecef);
     *this = ecef;
   }
 
-  template <typename Po, typename std::enable_if<std::is_same<typename Po::C, ECEFCat>::value && std::is_same<C, LLACat>::value, bool>::type = true>
+  template <typename Po, typename std::enable_if<Po::C==ECEFCat && C==LLACat, bool>::type = true>
   void convert_from(const Po& other){
     Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters> lla;
     ecef2lla(other, lla);
