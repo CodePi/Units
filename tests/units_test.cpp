@@ -247,6 +247,7 @@ int main(){
   assert(6050_J / 5_us == 1.21_GW);
   assert(11_mi / 450_s == 88_mph);
   assert(2_km * 2_km == SquareKilometers(4));
+  assert(sqrt(SquareFeet(144))==12_ft);
 
   // trig
   cout << "sin(180_deg): " << sin(180_deg) << "\n";

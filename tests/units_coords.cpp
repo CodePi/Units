@@ -10,26 +10,23 @@ enum Category{ECEFCat, LLACat, ENUCat};
 
 template <Category C_, typename U1, typename U2, typename U3>
 struct Pos3d{
+  // template param helpers
   using FloatType = typename U1::FloatType;
   static constexpr Category C = C_;
 
+  // constructors
   Pos3d()=default;
-
-  template <typename Po>
-  Pos3d(const Po& other) { set(other); }
-
+  template <typename Po> Pos3d(const Po& other) { set(other); }
+  Pos3d(U1 a, U2 b, U3 c) { set(a,b,c); }
   Pos3d(FloatType a,FloatType b,FloatType c){ set(a,b,c); }
 
-  template <typename Po>
-  Pos3d operator=(const Po& other) { set(other); return *this; }
+  // operator=
+  template <typename Po> Pos3d operator=(const Po& other) { set(other); return *this; }
 
-  void set(FloatType a_, FloatType b_, FloatType c_){ v1.set(a_); v2.set(b_); v3.set(c_); }
-  void set(U1 a_, U2 b_, U3 c_){ v1.set(a_); v2.set(b_); v3.set(c_); }
-
-  template <typename Po>
-  void set(const Po& other) {
-    convert_from(other);
-  }
+  // set
+  void set(FloatType a, FloatType b, FloatType c){ v1.set(a); v2.set(b); v3.set(c); }
+  void set(U1 a, U2 b, U3 c){ v1.set(a); v2.set(b); v3.set(c); }
+  template <typename Po> void set(const Po& other) { convert_from(other); }
 
   // direct access to values
   FloatType* data(){ return (FloatType*)&v1; };
@@ -44,23 +41,24 @@ struct Pos3d{
   Pos3d& operator*=(FloatType scalar) { *this = *this * scalar; return *this; }
   Pos3d& operator/=(FloatType scalar) { *this = *this / scalar; return *this; }
 
-  // distance if same type
-  template <typename Po, typename std::enable_if<C==Po::C && C!=LLACat, bool>::type = true>
-  Units::Meters distance(const Po& other){
-    auto d = *this - other;
-    double x = d.v1.get();
-    double y = d.v2.get();
-    double z = d.v3.get();
-    double dist = sqrt(x*x+y*y+z*z);
-    return Units::Meters(dist);
+  // norm - sqrt of the sum of the squares
+  U1 norm(){
+    static_assert(C!=LLACat,"Can't do norm for LLA");
+    return sqrt(v1*v1+v2*v2+v3*v3);
   }
 
-  // distance if one or both are lla
+  // distance, if same category (and not LLA)
+  template <typename Po, typename std::enable_if<C==Po::C && C!=LLACat, bool>::type = true>
+  Units::Meters distance(const Po& other){
+    return (*this - other).norm();
+  }
+
+  // distance, if one or both are lla
   template <typename Po, typename std::enable_if<C==LLACat||Po::C==LLACat, bool>::type = true>
   Units::Meters distance(const Po& other) {
     Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> a = *this;
     Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> b = other;
-    a.template distance(b);
+    return (a-b).norm();
   }
 
   // values
@@ -136,8 +134,8 @@ private:
 
   // sanity checking...
   // make sure all values have same FloatType
-  static_assert(std::is_same<typename U1::FloatType,typename U2::FloatType>::value,"");
-  static_assert(std::is_same<typename U1::FloatType,typename U3::FloatType>::value,"");
+  static_assert(std::is_same<typename U1::FloatType,typename U2::FloatType>::value,"FloatType must be same for all units");
+  static_assert(std::is_same<typename U1::FloatType,typename U3::FloatType>::value,"FloatType must be same for all units");
 };
 
 template <typename U>
@@ -149,7 +147,7 @@ struct ECEF : public Pos3d<ECEFCat,U,U,U> {
   const U& x() const{return this->v1;}
   const U& y() const{return this->v2;}
   const U& z() const{return this->v3;}
-  static_assert(std::is_same<typename U::C, Units::Distance>::value,"");
+  static_assert(std::is_same<typename U::C, Units::Distance>::value,"ECEF must use Distance Units");
 };
 using ECEF_m = ECEF<Units::Meters>;
 
@@ -162,8 +160,8 @@ struct LLA : public Pos3d<LLACat,Ull,Ull,Ua>{
   const Ull& lat() const{return this->v1;}
   const Ull& lng() const{return this->v2;}
   const Ua& alt() const{return this->v3;}
-  static_assert(std::is_same<typename Ull::C, Units::Angle>::value,"");
-  static_assert(std::is_same<typename Ua::C, Units::Distance>::value,"");
+  static_assert(std::is_same<typename Ull::C, Units::Angle>::value,"lat/lng units must be an Angle");
+  static_assert(std::is_same<typename Ua::C, Units::Distance>::value,"alt units must be a Distance");
 };
 using LLA_ddm = LLA<Units::Degrees, Units::Meters>;
 using LLA_rrm = LLA<Units::Radians, Units::Meters>;
@@ -210,7 +208,7 @@ struct ENU : public Pos3d<ENUCat,U,U,U> {
   const U& x() const{return this->v1;}
   const U& y() const{return this->v2;}
   const U& z() const{return this->v3;}
-  static_assert(std::is_same<typename U::C, Units::Distance>::value,"");
+  static_assert(std::is_same<typename U::C, Units::Distance>::value,"ENU must use Distance Units");
 };
 using ENU_m = ENU<Units::Meters>;
 

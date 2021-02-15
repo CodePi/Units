@@ -538,6 +538,9 @@ GEN_MULT_DIV(Watts, Volts, Amps)                                    // Watts = V
 GEN_MULT_DIV(Miles, MilesPerGallon, Gallons)                        // Fuel Efficiency
 GEN_MULT_DIV(Radians, RadiansPerSecond, Seconds)                    // Angular Velocity
 
+// sqrt for area -> distance
+Meters sqrt(SquareMeters sm){ return Meters(std::sqrt(sm.get())); }
+
 ///////////////////////////////////////////////////////////////////////////////
 // Stream operator
 template <typename R,typename C,typename FloatType>
