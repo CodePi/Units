@@ -1,5 +1,6 @@
 units_test
 eigen_units_test
+units_coords
 *~
 build/
 cmake-build-*/
