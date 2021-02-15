@@ -5,6 +5,7 @@
 #include "../units.h"
 #include <iostream>
 #include <iomanip>
+#include <cassert>
 
 enum Category{ECEFCat, LLACat, ENUCat};
 
@@ -72,7 +73,7 @@ private:
   static constexpr double WGS84_A = 6378137;
   static constexpr double WGS84_F = 1/298.257223563;
   static constexpr double WGS84_B = WGS84_A*(1-WGS84_F);
-  static constexpr double WGS84_E2 = 1 - squared(1-WGS84_F);
+  static constexpr double WGS84_E2 = 1 - (1-WGS84_F)*(1-WGS84_F);
 
   // if same category, just call set
   template <typename Po, typename std::enable_if<C==Po::C, bool>::type = true>
@@ -237,6 +238,9 @@ int main(){
   // distance
   std::cout << lla_ddm.distance(lla_ddm_other) << "\n";
   std::cout << "\n";
+
+  // compare
+  assert(lla_ddm.distance(ecef_m) < Units::Meters(1));
 
   // wtf
   LLA<Units::Radians, Units::Furlongs> wtf = ecef_m;
