@@ -213,12 +213,17 @@ struct RatioInv{
     return Units::Unit<Uo::C, Ro, FT>(val);                                  \
   }
 
-// generate functions U1=U2*U2 and U1=U2/U1
+// Macro for generating Uo = sqrt(Ui) (Note: potentially unnecessary conversions because no constexpr sqrt)
+#define GEN_SQRT(Uo,Ui)                                              \
+  Uo sqrt(Ui in){ return Uo(std::sqrt(in.get())); }                  \
+
+// generate functions U1=U2*U2, U1=U2/U1, and U2=sqrt(U1)
 #define GEN_MULT_DIV_SQ(U1,U2)                                       \
   GEN_MULT(U1,U2,U2,double)                                          \
   GEN_MULT(U1,U2,U2,float)                                           \
   GEN_DIV(U2,U1,U2,double)                                           \
-  GEN_DIV(U2,U1,U2,float)
+  GEN_DIV(U2,U1,U2,float)                                            \
+  GEN_SQRT(U2,U1)
 
 // generate functions: U1=U2*U3, U1=U3*U2, U2=U1/U3, amd U3=U1/U2
 #define GEN_MULT_DIV(U1,U2,U3)                                       \
@@ -530,7 +535,6 @@ GEN_MULT_DIV(MetersPerSecond, MetersPerSecondSquared, Seconds)      // Speed = A
 GEN_MULT_DIV(Newtons, Kilograms, MetersPerSecondSquared)            // Force = Mass*Acceleration
 GEN_MULT_DIV(KilogramsMetersPerSecond, Kilograms, MetersPerSecond)  // Momentum = Mass*Velocity
 GEN_MULT_DIV(KilogramsMetersPerSecond, Newtons, Seconds)            // Momentum = Force*Time
-GEN_MULT_DIV_SQ(SquareMeters, Meters)                               // Area = Dist*Dist
 GEN_MULT_DIV(CubicMeters, SquareMeters, Meters)                     // Volume = Area*Distance
 GEN_MULT_DIV(WattHours, Watts, Hours)                               // Energy = Power*Time
 GEN_MULT_DIV(Volts, Amps, Ohms)                                     // Ohm's Law: V=I*R
@@ -538,8 +542,8 @@ GEN_MULT_DIV(Watts, Volts, Amps)                                    // Watts = V
 GEN_MULT_DIV(Miles, MilesPerGallon, Gallons)                        // Fuel Efficiency
 GEN_MULT_DIV(Radians, RadiansPerSecond, Seconds)                    // Angular Velocity
 
-// sqrt for area -> distance
-Meters sqrt(SquareMeters sm){ return Meters(std::sqrt(sm.get())); }
+// Generate operator* and operator/ and sqrt()
+GEN_MULT_DIV_SQ(SquareMeters, Meters)                               // Area = Dist*Dist
 
 ///////////////////////////////////////////////////////////////////////////////
 // Stream operator
