@@ -44,17 +44,23 @@ struct Pos3d{
   Pos3d& operator*=(FloatType scalar) { *this = *this * scalar; return *this; }
   Pos3d& operator/=(FloatType scalar) { *this = *this / scalar; return *this; }
 
-  // distance (TODO: Block ENU?)
-  template <typename Po>
+  // distance if same type
+  template <typename Po, typename std::enable_if<C==Po::C && C!=LLACat, bool>::type = true>
   Units::Meters distance(const Po& other){
-    Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> a = *this;
-    Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> b = other;
-    auto d = a-b;
+    auto d = *this - other;
     double x = d.v1.get();
     double y = d.v2.get();
     double z = d.v3.get();
     double dist = sqrt(x*x+y*y+z*z);
     return Units::Meters(dist);
+  }
+
+  // distance if one or both are lla
+  template <typename Po, typename std::enable_if<C==LLACat||Po::C==LLACat, bool>::type = true>
+  Units::Meters distance(const Po& other) {
+    Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> a = *this;
+    Pos3d<ECEFCat, Units::Meters, Units::Meters, Units::Meters> b = other;
+    a.template distance(b);
   }
 
   // values
@@ -70,9 +76,11 @@ private:
   static constexpr double WGS84_B = WGS84_A*(1-WGS84_F);
   static constexpr double WGS84_E2 = 1 - squared(1-WGS84_F);
 
+  // if same category, just call set
   template <typename Po, typename std::enable_if<C==Po::C, bool>::type = true>
   void convert_from(const Po& other){ set(other.v1,other.v2,other.v3); }
 
+  // if other is LLA and this is ECEF, call lla2ecef
   template <typename Po, typename std::enable_if<Po::C==LLACat && C==ECEFCat, bool>::type = true>
   void convert_from(const Po& other){
     Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters> ecef;
@@ -80,6 +88,7 @@ private:
     *this = ecef;
   }
 
+  // if other is ECEF and this is LLA, call ecef2lla
   template <typename Po, typename std::enable_if<Po::C==ECEFCat && C==LLACat, bool>::type = true>
   void convert_from(const Po& other){
     Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters> lla;
@@ -87,7 +96,7 @@ private:
     *this = lla;
   }
 
-  void ecef2lla(const Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters>& ecef,
+  static void ecef2lla(const Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters>& ecef,
                 Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters>& lla)
   {
     double x = ecef.v1.get();
@@ -109,7 +118,7 @@ private:
     lla.set(lat, lng, alt);
   }
 
-  void lla2ecef(const Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters>& lla,
+  static void lla2ecef(const Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters>& lla,
                 Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters>& ecef)
   {
     double alt = lla.v3.get();
