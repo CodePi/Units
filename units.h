@@ -181,6 +181,20 @@ struct RatioInv{
   static constexpr long double O = 0;
 };
 
+// constexpr sqrt
+inline constexpr double sqrtc(double x, double curr, double prev){
+  return curr == prev ? curr : sqrtc(x,0.5*(curr+x/curr),curr);
+}
+inline constexpr double sqrtc(double x){ return sqrtc(x,x,0);}
+
+// RatioSqrt
+template<typename R>
+struct RatioSqrt{
+  static_assert(R::O==0,"RatioSqrt doesn't support offset");
+  static constexpr long double M = sqrtc(R::M);
+  static constexpr long double O = 0;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // Macros
 
@@ -213,9 +227,16 @@ struct RatioInv{
     return Units::Unit<Uo::C, Ro, FT>(val);                                  \
   }
 
-// Macro for generating Uo = sqrt(Ui) (Note: potentially unnecessary conversions because no constexpr sqrt)
-#define GEN_SQRT(Uo,Ui)                                              \
-  Uo sqrt(Ui in){ return Uo(std::sqrt(in.get())); }                  \
+// Macro for generating Uo = sqrt(Ui)
+#define GEN_SQRT(Uo,Ui,FT)                                                     \
+  template <typename Ri,          /* Uo*sqrt(Ri/Ui) */                         \
+            typename Ro = RatioProd<Uo,RatioSqrt<RatioProd<Ri,RatioInv<Ui>>>>> \
+  inline Units::Unit<Uo::C, Ro, FT>                                            \
+  sqrt(Units::Unit<Ui::C,Ri,FT> in) {                                          \
+    static_assert(Ri::O==0, "GEN_SQRT doesn't support offset");                \
+    Uo::FloatType val = std::sqrt(in.get());                                   \
+    return Units::Unit<Uo::C, Ro, FT>(val);                                    \
+  }
 
 // generate functions U1=U2*U2, U1=U2/U1, and U2=sqrt(U1)
 #define GEN_MULT_DIV_SQ(U1,U2)                                       \
@@ -223,7 +244,8 @@ struct RatioInv{
   GEN_MULT(U1,U2,U2,float)                                           \
   GEN_DIV(U2,U1,U2,double)                                           \
   GEN_DIV(U2,U1,U2,float)                                            \
-  GEN_SQRT(U2,U1)
+  GEN_SQRT(U2,U1,double)                                             \
+  GEN_SQRT(U2,U1,float)
 
 // generate functions: U1=U2*U3, U1=U3*U2, U2=U1/U3, amd U3=U1/U2
 #define GEN_MULT_DIV(U1,U2,U3)                                       \
