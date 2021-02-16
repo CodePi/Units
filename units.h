@@ -182,10 +182,10 @@ struct RatioInv{
 };
 
 // constexpr sqrt
-inline constexpr double sqrtc(double x, double curr, double prev){
+inline constexpr long double sqrtc(long double x, long double curr, long double prev){
   return curr == prev ? curr : sqrtc(x,0.5*(curr+x/curr),curr);
 }
-inline constexpr double sqrtc(double x){ return sqrtc(x,x,0);}
+inline constexpr long double sqrtc(long double x){ return sqrtc(x,x,0); }
 
 // RatioSqrt
 template<typename R>
