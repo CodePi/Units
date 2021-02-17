@@ -68,13 +68,6 @@ struct Pos3d{
   U3 v3;
 
 private:
-  static constexpr double squared(double v) noexcept {return v*v;};
-  static constexpr double cubed(double v) noexcept {return v*v*v;};
-  static constexpr double WGS84_A = 6378137;
-  static constexpr double WGS84_F = 1/298.257223563;
-  static constexpr double WGS84_B = WGS84_A*(1-WGS84_F);
-  static constexpr double WGS84_E2 = 1 - (1-WGS84_F)*(1-WGS84_F);
-
   // if same category, just call set
   template <typename Po, typename std::enable_if<C==Po::C, bool>::type = true>
   void convert_from(const Po& other){ set(other.v1,other.v2,other.v3); }
@@ -95,6 +88,15 @@ private:
     *this = lla;
   }
 
+  // helpers for coordinate conversions
+  static double squared(double v) {return v*v;};
+  static double cubed(double v) {return v*v*v;};
+  static constexpr double WGS84_A = 6378137;
+  static constexpr double WGS84_F = 1/298.257223563;
+  static constexpr double WGS84_B = WGS84_A*(1-WGS84_F);
+  static constexpr double WGS84_E2 = 1 - (1-WGS84_F)*(1-WGS84_F);
+
+  // ECEF to LLA conversion
   static void ecef2lla(const Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters>& ecef,
                 Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters>& lla)
   {
@@ -117,6 +119,7 @@ private:
     lla.set(lat, lng, alt);
   }
 
+  // LLA to ECEF conversion
   static void lla2ecef(const Pos3d<LLACat,Units::Radians,Units::Radians,Units::Meters>& lla,
                 Pos3d<ECEFCat,Units::Meters,Units::Meters,Units::Meters>& ecef)
   {
