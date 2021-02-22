@@ -10,7 +10,8 @@ Header only, C++11, minimal overhead, type enforced conversion and arithmetic li
 * Easy to add new units and categories.  Typically one line of code per new unit.
 * Automatically converts accurately and quickly between units in the same category.  E.g. meters to miles.
 * Understands [relationships](units.md#relationships) between categories.  E.g. `speed = distance/time` and `energy = power*time`.
-* Most units have user-defined literals.  E.g. `88_mph` and `1.21_GW`. 
+* Most units have user-defined literals.  E.g. `88_mph` and `1.21_GW`.
+* Support for common 3D positional coordinate systems in units_coords.h (LLA, ECEF, ENU).
 * Optional (experimental) support for Eigen library.  E.g. can create an eigen vector of type Meters.  And supports bulk conversion and arithmetic on eigen containers of units.
 
 ## Example Usage
@@ -65,3 +66,4 @@ using FootballFields = Unit<Distance, RatioProd<Yards, Ratio<100,1> >>;
 ## More info
 * See [units.md](units.md) for all of the pre-defined units, categories, and relationships.
 * See [tests/units_test.cpp](tests/units_test.cpp) for many more examples.
+* See [tests/units_coords_test.cpp](tests/units_coords_test.cpp) for LLA, ECEF, and ENU usage examples.
