@@ -1,9 +1,9 @@
-default : units_test units_coords
+default : units_test units_coords_test
 
 units_test : units_test.cpp ../units.h
 	$(CXX) -o $@ $< -std=c++11
 
-units_coords_test : ../units_coords.h ../units.h
+units_coords_test : units_coords_test.cpp ../units_coords.h ../units.h
 	$(CXX) -o $@ $< -std=c++11
 
 # optional to build eigen_units_test
@@ -14,4 +14,4 @@ eigen_units_test : eigen_units_test.cpp ../units.h ../eigen_units.h
 all : default eigen_units_test
 
 clean :
-	rm -f units_test units_coords eigen_units_test
+	rm -f units_test units_coords_test eigen_units_test

@@ -4,3 +4,4 @@ units_coords
 *~
 build/
 cmake-build-*/
+units_coords_test
