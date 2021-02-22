@@ -3,7 +3,7 @@ default : units_test units_coords
 units_test : units_test.cpp ../units.h
 	$(CXX) -o $@ $< -std=c++11
 
-units_coords : units_coords.cpp ../units.h
+units_coords : units_coords.h ../units.h
 	$(CXX) -o $@ $< -std=c++11
 
 # optional to build eigen_units_test
