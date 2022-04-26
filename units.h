@@ -514,8 +514,8 @@ GEN_LITERAL(_THz, THz)
 ////////
 // Angle
 struct RatioPi180 {
-  static constexpr double M = M_PIl/180;
-  static constexpr double O = 0;
+  static constexpr long double M = M_PIl/180;
+  static constexpr long double O = 0;
 };
 using Radians = Unit<Angle,Base>;
 using Degrees = Unit<Angle,RatioPi180>;
