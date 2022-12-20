@@ -34,7 +34,7 @@ Celsius t = 98.6_F;          // t is 37 celsius
 ### Interunit relationships
 ```c++
 MilesPerHour speed = 11_mi / 450_s;  // 11 miles in 450 seconds is 88 mph
-Gigawatts power = 6050_J / 5_us;     // 60500 joules in 5 microseconds is 1.21 gigawatts
+Gigawatts power = 6050_J / 5_us;     // 6050 joules in 5 microseconds is 1.21 gigawatts
 Millivolts mv = 10_mA * 20_ohms;     // 200 millivolts (Ohm's Law)
 ```
 
