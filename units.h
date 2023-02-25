@@ -513,6 +513,9 @@ GEN_LITERAL(_THz, THz)
 
 ////////
 // Angle
+#ifndef M_PIl  // not defined on some systems
+#define M_PIl M_PI
+#endif
 struct RatioPi180 {
   static constexpr long double M = M_PIl/180;
   static constexpr long double O = 0;
