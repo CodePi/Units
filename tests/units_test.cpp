@@ -29,6 +29,10 @@ using namespace std;
 using namespace Units;
 using namespace Units::literals;
 
+bool approx(double a, double b, double epsilon=1e-6){
+  return fabs(a-b) <= epsilon;
+}
+
 // if you don't know the unit at compile time, you can use something like this to convert it
 Meters ToMeters(double val, const string& unit){
   if(unit=="m") return Meters(val);
@@ -254,10 +258,10 @@ int main(){
   cout << "cos(180_deg): " << cos(180_deg) << "\n";
   assert(Degrees(180) == Radians(M_PI));
   assert(sin(0_deg) == 0);
-  assert(sin(180_deg) == sin(M_PI));
+  assert(approx(sin(180_deg), sin(M_PI)));
   assert(sin(90_deg) == 1);
   assert(cos(0_deg) == 1);
-  assert(cos(90_deg) == cos(M_PI/2));
+  assert(approx(cos(90_deg), cos(M_PI/2)));
   assert(cos(180_deg) == -1);
   assert(asin_units(0) == 0_deg);
   assert(asin_units(1) == 90_deg);
