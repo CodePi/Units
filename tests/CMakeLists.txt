@@ -4,11 +4,13 @@ set(CMAKE_CXX_STANDARD 11)
 
 # build units test
 add_executable(units_test units_test.cpp)
+add_test(units_test units_test)
 
 # build units20 test
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 11)
     add_executable(units20_test units20_test.cpp)
     set_property(TARGET units20_test PROPERTY CXX_STANDARD 20)
+    add_test(units20_test units20_test)
 endif()
 
 # build eigen_units_test, if eigen is available
