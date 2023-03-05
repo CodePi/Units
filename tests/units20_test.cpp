@@ -15,6 +15,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#if __cplusplus < 202000
+#include <iostream>
+int main(){
+  std::cout << "C++20 not supported by this compiler\n";
+}
+#else
+
 #include "../units20.h"
 
 #include <cassert>
@@ -309,3 +316,5 @@ int main(){
   //Miles m = Seconds(1);      // category mismatch
   //auto s = Meters(1)/Hz(1);  // invalid relationship
 }
+
+#endif
