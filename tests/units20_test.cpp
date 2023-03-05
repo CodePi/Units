@@ -186,7 +186,7 @@ int main(){
   assert(Fortnights(1)==14_dy);
   assert(SquareMiles(1)==Acres(640));
   assert(Pounds(14) == Stones(1));
-/*
+
   // speed = distance / time
   MPH mph = 100_mi / 8_hr;
   assert(mph == 12.5_mph);
@@ -198,13 +198,13 @@ int main(){
   assert((1.21_GW).approx(1985_MJ/(2015_in/88_mph)/1.260942));
   assert(10_V*120_A == 1.2_KW);
   assert(10_mA * 20_ohms == 200_mV);
-*/
+
   // frequency
   assert(1_KHz==1000_Hz);
   assert(1_MHz==1000_KHz);
   assert(1_GHz==1000_MHz);
   assert(1_THz==1000_GHz);
-/*
+
   // frequency to interval conversion
   assert(inverse(1_Hz)==1_s);
   assert(inverse(1_KHz)==1_ms);
@@ -219,7 +219,7 @@ int main(){
   // ostream
   stringstream ss;
   ss << ft;
-*/
+
   // vector conversion
   vector<Feet> vf(10);
   for(int i=0;i<vf.size();i++) vf[i] = Feet(i);
@@ -230,7 +230,7 @@ int main(){
   Meters mx = *std::max_element(vf.begin(), vf.end());
   Meters sum = std::accumulate(vf.begin(), vf.end(), Feet{});
   cout << "vf max and sum: " << mx << " " << sum << "\n";
-/*
+
   // Interunit relationships
   assert(SquareFeet(1) == 1_ft*1_ft);
   assert(SquareFeet(1) == 12_in*12_in);
@@ -252,7 +252,6 @@ int main(){
   assert(11_mi / 450_s == 88_mph);
   assert(2_km * 2_km == SquareKilometers(4));
   assert(sqrt(SquareFeet(144))==12_ft);
-*/
 
   // trig
   cout << "sin(180_deg): " << sin(180_deg) << "\n";
@@ -282,9 +281,9 @@ int main(){
   assert(m64 == mdef);
   Float32<Inches>in = Feet(4);
   assert(in.get()==48);
-  //auto mphf = Float32<Miles>(10)/Float32<Hours>(5);
-  //assert(sizeof(mphf)==4);
-  //assert(mphf.get()==2);
+  auto mphf = Float32<Miles>(10)/Float32<Hours>(5);
+  assert(sizeof(mphf)==4);
+  assert(mphf.get()==2);
 
   // string to unit
   assert(ToMeters(5,"ft") == 5_ft);
@@ -293,7 +292,7 @@ int main(){
   assert(ToMeters("  3.14 ft  foo ") == 3.14_ft);
 
   // extreme example
-  //assert(Angstroms(1)*Angstroms(1)*Angstroms(1)==CubicMeters(1e-30));
+  assert(Angstroms(1)*Angstroms(1)*Angstroms(1)==CubicMeters(1e-30));
 
   // Smoots and football fields
   using Smoots = Unit<Distance,1.702L>;
