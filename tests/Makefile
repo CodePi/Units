@@ -1,4 +1,4 @@
-default : units_test units_coords_test
+default : units_test units20_test units_coords_test
 
 units_test : units_test.cpp ../units.h
 	$(CXX) -o $@ $< -std=c++11
