@@ -21,6 +21,7 @@
 #error "C++20 compatible compiler is required for units20.h, use units.h instead"
 #endif
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
 #include <cinttypes>
