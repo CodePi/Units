@@ -31,18 +31,18 @@ namespace Units {
 ///////////////////////////////////////////////////////////////////////////////
 // Unit Class
 
-template<typename Category, long double multiplier, typename FloatType_=double>
+template<typename Category, typename Conversion, typename FloatType_=double>
 class Unit{
 public:
 
   //////////////////////
   // template parameters
-  //typedef Ratio R;
+  typedef Conversion R;
   typedef Category C;
   typedef FloatType_ FloatType;
   typedef FloatType_ FT;
-  static constexpr long double M = multiplier;
-  //static constexpr long double O = Ratio::O;
+  static constexpr long double M = Conversion::M;
+  static constexpr long double O = Conversion::O;
 
   //////////////////////////
   // Constructors and assign
@@ -53,13 +53,13 @@ public:
   explicit Unit(FloatType val) : m_val(val) {}
 
   // Construct from other Unit (and convert)
-  template<long double R2,typename FT2>
+  template<typename R2,typename FT2>
   Unit(Unit<C,R2,FT2> other){
     set(other);
   }
 
   // Assign from other Unit (and convert)
-  template<long double R2,typename FT2>
+  template<typename R2,typename FT2>
   Unit& operator=(Unit<C,R2,FT2> other){
     set(other);
     return *this;
@@ -87,12 +87,12 @@ public:
   }
 
   // set by other Unit (and convert)
-  template<long double R2, typename FT2>
+  template<typename R2, typename FT2>
   void set(Unit<C,R2,FT2> other){
     // Compute multiplier: mult =  R2 / R
-    constexpr long double mult = ((long double)R2 / M);
+    constexpr long double mult = ((long double)R2::M / R::M);
     // Compute offset: offset = R_offset - mult * R2_offset
-    constexpr FloatType offset = 0; //TODO((long double)R::O) - mult*((long double)R2::O);
+    constexpr FloatType offset = ((long double)R::O) - mult*((long double)R2::O);
     // val = mult * other + offset
     m_val = (FloatType)mult * other.get();
     if(offset!=0) m_val += offset;
@@ -106,36 +106,36 @@ public:
   // arithmetic operators
 
   // Unit = Unit +- Unit
-  template<long double R2, typename FT2> Unit operator+(Unit<C,R2,FT2> other) const{ return Unit(m_val+Unit(other).get()); }
-  template<long double R2, typename FT2> Unit operator-(Unit<C,R2,FT2> other) const{ return Unit(m_val-Unit(other).get()); }
+  template<typename R2, typename FT2> Unit operator+(Unit<C,R2,FT2> other) const{ return Unit(m_val+Unit(other).get()); }
+  template<typename R2, typename FT2> Unit operator-(Unit<C,R2,FT2> other) const{ return Unit(m_val-Unit(other).get()); }
 
   // Unit = Unit */ FloatType
   Unit operator*(FloatType scalar) const{ return Unit(m_val*scalar); }
   Unit operator/(FloatType scalar) const{ return Unit(m_val/scalar); }
 
   // FloatType = Unit / Unit
-  template<long double R2, typename FT2> FloatType operator/(Unit<C,R2,FT2> other) const{ return m_val / Unit(other).get(); }
+  template<typename R2, typename FT2> FloatType operator/(Unit<C,R2,FT2> other) const{ return m_val / Unit(other).get(); }
 
   // Unary operators +-
   Unit operator+() const{ return Unit(m_val); }
   Unit operator-() const{ return Unit(-m_val); }
 
   // operators += -= *= /=
-  template<long double R2, typename FT2> Unit& operator+=(Unit<C,R2,FT2> other){ m_val += Unit(other).get(); return *this; }
-  template<long double R2, typename FT2> Unit& operator-=(Unit<C,R2,FT2> other){ m_val -= Unit(other).get(); return *this; }
+  template<typename R2, typename FT2> Unit& operator+=(Unit<C,R2,FT2> other){ m_val += Unit(other).get(); return *this; }
+  template<typename R2, typename FT2> Unit& operator-=(Unit<C,R2,FT2> other){ m_val -= Unit(other).get(); return *this; }
   Unit& operator*=(FloatType other)     { m_val *= other; return *this; }
   Unit& operator/=(FloatType other)     { m_val /= other; return *this; }
 
   ////////////////////
   // compare operators
-  template<long double R2, typename FT2> bool operator==(Unit<C,R2,FT2> other) const{ return m_val == Unit(other).get(); }
-  template<long double R2, typename FT2> bool operator!=(Unit<C,R2,FT2> other) const{ return m_val != Unit(other).get(); }
-  template<long double R2, typename FT2> bool operator<=(Unit<C,R2,FT2> other) const{ return m_val <= Unit(other).get(); }
-  template<long double R2, typename FT2> bool operator>=(Unit<C,R2,FT2> other) const{ return m_val >= Unit(other).get(); }
-  template<long double R2, typename FT2> bool operator< (Unit<C,R2,FT2> other) const{ return m_val <  Unit(other).get(); }
-  template<long double R2, typename FT2> bool operator> (Unit<C,R2,FT2> other) const{ return m_val >  Unit(other).get(); }
+  template<typename R2, typename FT2> bool operator==(Unit<C,R2,FT2> other) const{ return m_val == Unit(other).get(); }
+  template<typename R2, typename FT2> bool operator!=(Unit<C,R2,FT2> other) const{ return m_val != Unit(other).get(); }
+  template<typename R2, typename FT2> bool operator<=(Unit<C,R2,FT2> other) const{ return m_val <= Unit(other).get(); }
+  template<typename R2, typename FT2> bool operator>=(Unit<C,R2,FT2> other) const{ return m_val >= Unit(other).get(); }
+  template<typename R2, typename FT2> bool operator< (Unit<C,R2,FT2> other) const{ return m_val <  Unit(other).get(); }
+  template<typename R2, typename FT2> bool operator> (Unit<C,R2,FT2> other) const{ return m_val >  Unit(other).get(); }
 
-  template<long double R2, typename FT2>
+  template<typename R2, typename FT2>
   bool approx(Unit<C,R2,FT2> other, double epsilon=1e-6) const{
     return fabs(m_val-Unit(other).get()) <= epsilon;
   }
@@ -150,16 +150,30 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 // Override default FloatType.  e.g. Float32<Meters> is float instead of double
-template<typename U> using Float32 = Unit<typename U::C, U::M, float>;
-template<typename U> using Float64 = Unit<typename U::C, U::M, double>;
+template<typename U> using Float32 = Unit<typename U::C, typename U::R, float>;
+template<typename U> using Float64 = Unit<typename U::C, typename U::R, double>;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Macros
+// Conversion template
 
+// Conversion (and offset, if needed)
+template<long double Multiplier, long double Offset=0.0L>
+struct Conversion {
+  static constexpr long double M = Multiplier;
+  static constexpr long double O = Offset;
+};
+
+// constexpr sqrt
 inline constexpr long double sqrtc(long double x, long double curr, long double prev){
   return curr == prev ? curr : sqrtc(x,0.5*(curr+x/curr),curr);
 }
 inline constexpr long double sqrtc(long double x){ return sqrtc(x,x,0); }
+inline constexpr long double squarec(long double x){ return x*x; }
+inline constexpr long double cubec(long double x){ return x*x*x; }
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Macros
 
 // helper macro for generating user-defined literals for units
 #define GEN_LITERAL(lit, unit)                                              \
@@ -170,33 +184,33 @@ inline constexpr long double sqrtc(long double x){ return sqrtc(x,x,0); }
 
 // Macro for generating Uo = Ua * Ub
 #define GEN_MULT(Uo,Ua,Ub,FT)                                                \
-  template <long double Ra, long double Rb,     /* Ra*Rb*Uo/Ua/Ub */               \
-            long double Ro = Ra*Rb*Uo::M/Ua::M/Ub::M>     \
+  template <typename Ra, typename Rb,     /* Ra*Rb*Uo/Ua/Ub */               \
+            typename Ro = Conversion<Ra::M*Rb::M*Uo::M/Ua::M/Ub::M>>              \
   inline Units::Unit<Uo::C, Ro, FT>                                          \
   operator*(Units::Unit<Ua::C,Ra,FT> a, Units::Unit<Ub::C,Rb,FT> b) {        \
-    /* TODO static_assert(Ra::O==0||Rb::O==0, "GEN_MULT doesn't support offset"); */   \
+    static_assert(Ra::O==0||Rb::O==0, "GEN_MULT doesn't support offset");    \
     Uo::FloatType val = a.get()*b.get();                                     \
     return Units::Unit<Uo::C, Ro, FT>(val);                                  \
   }
 
 // Macro for generating Uo = Ua / Ub
 #define GEN_DIV(Uo,Ua,Ub,FT)                                                 \
-  template <long double Ra, long double Rb,     /* Ra/Rb*Uo/Ua*Ub */               \
-            long double Ro = Ra/Rb*Uo::M/Ua::M*Ub::M>     \
+  template <typename Ra, typename Rb,     /* Ra/Rb*Uo/Ua*Ub */               \
+            typename Ro = Conversion<Ra::M/Rb::M*Uo::M/Ua::M*Ub::M>>     \
   inline Units::Unit<Uo::C, Ro, FT>                                          \
   operator/(Units::Unit<Ua::C,Ra,FT> a, Units::Unit<Ub::C,Rb,FT> b) {        \
-    /*TODO static_assert(Ra::O==0||Rb::O==0, "GEN_DIV doesn't support offset");  */   \
+    static_assert(Ra::O==0||Rb::O==0, "GEN_DIV doesn't support offset");     \
     Uo::FloatType val = a.get()/b.get();                                     \
     return Units::Unit<Uo::C, Ro, FT>(val);                                  \
   }
 
 // Macro for generating Uo = sqrt(Ui)
 #define GEN_SQRT(Uo,Ui,FT)                                                     \
-  template <long double Ri,          /* Uo*sqrt(Ri/Ui) */                         \
-            long double Ro = Uo::M*sqrtc(Ri/Ui::M) > \
+  template <typename Ri,          /* Uo*sqrt(Ri/Ui) */                         \
+            typename Ro = Conversion<Uo::M*sqrt(Ri::M/Ui::M)>> \
   inline Units::Unit<Uo::C, Ro, FT>                                            \
   sqrt(Units::Unit<Ui::C,Ri,FT> in) {                                          \
-    /* TODO static_assert(Ri::O==0, "GEN_SQRT doesn't support offset");   */             \
+    static_assert(Ri::O==0, "GEN_SQRT doesn't support offset");                \
     Uo::FloatType val = std::sqrt(in.get());                                   \
     return Units::Unit<Uo::C, Ro, FT>(val);                                    \
   }
@@ -223,10 +237,10 @@ inline constexpr long double sqrtc(long double x){ return sqrtc(x,x,0); }
 
 // Macro helper GEN_INVERSE
 #define GEN_INVERSE_HELPER(Uo,Ui,FT)                                                 \
-  template <long double Ri,                                                             \
-            long double Ro = Uo::M * Ui::M / Ri>                             \
+  template <typename Ri,                                                             \
+            typename Ro = Conversion<Ui::M*Uo::M/Ri::M>>                             \
   inline Unit<Uo::C, Ro, FT> inverse(Unit<Ui::C, Ri, FT> s){                         \
-    /* TODO static_assert(Uo::O==0||Ui::O==0, "GEN_INVERSE doesn't support offset"); */        \
+    static_assert(Uo::O==0||Ui::O==0, "GEN_INVERSE doesn't support offset");         \
     return Unit<Uo::C, Ro, FT>(1/s.get());                                           \
   }
 
@@ -244,7 +258,7 @@ struct Area{};
 struct Volume{};
 struct Time{};
 struct Speed{};
-struct Acceleration{};
+struct AcceleConversionn{};
 struct Mass{};
 struct Force{};
 struct Momentum{};
@@ -260,34 +274,33 @@ struct Temperature{};
 struct FuelEfficiency{};
 
 // SI helper
-static constexpr long double Tera  = 1e12L;
-static constexpr long double Giga  = 1e9L;
-static constexpr long double Mega  = 1e6L;
-static constexpr long double Kilo  = 1e3L;
-static constexpr long double Base  = 1e0L;
-static constexpr long double Centi = 1e-2L;
-static constexpr long double Milli = 1e-3L;
-static constexpr long double Micro = 1e-6L;
-static constexpr long double Nano  = 1e-9L;
+using Tera  = Conversion<1e12L>;
+using Giga  = Conversion<1e9L>;
+using Mega  = Conversion<1e6L>;
+using Kilo  = Conversion<1e3L>;
+using Base  = Conversion<1e0L>;
+using Centi = Conversion<1e-2L>;
+using Milli = Conversion<1e-3L>;
+using Micro = Conversion<1e-6L>;
+using Nano  = Conversion<1e-9L>;
 
 ///////////
 // Distance
-static const long double cm_per_in = 2.54;
 using Kilometers    = Unit<Distance,Kilo>;
 using Meters        = Unit<Distance,Base>;
 using Centimeters   = Unit<Distance,Centi>;
 using Millimeters   = Unit<Distance,Milli>;
 using Microns       = Unit<Distance,Micro>;
 using Nanometers    = Unit<Distance,Nano>;
-using Angstroms     = Unit<Distance,Nano/10>;
-using Inches        = Unit<Distance,2.54L*Centi>;
-using Feet          = Unit<Distance,Inches::M*12>;
-using Yards         = Unit<Distance,Inches::M*12*3>;
-using Furlongs      = Unit<Distance,Inches::M*12*3*220>;
-using Miles         = Unit<Distance,Inches::M*12*3*1760>;
-using NauticalMiles = Unit<Distance,1852.0L>;
-using Rods          = Unit<Distance,Feet::M*16.5>;
-using Bananas       = Unit<Distance,0.178L>;
+using Angstroms     = Unit<Distance,Conversion<Nanometers::M/10>>;
+using Inches        = Unit<Distance,Conversion<2.54L/100>>;
+using Feet          = Unit<Distance,Conversion<Inches::M*12>>;
+using Yards         = Unit<Distance,Conversion<Inches::M*12*3>>;
+using Furlongs      = Unit<Distance,Conversion<Inches::M*12*3*220>>;
+using Miles         = Unit<Distance,Conversion<Inches::M*12*3*1760>>;
+using NauticalMiles = Unit<Distance,Conversion<1852.0L>>;
+using Rods          = Unit<Distance,Conversion<Feet::M*16.5>>;
+using Bananas       = Unit<Distance,Conversion<0.178L>>;
 
 GEN_LITERAL(_nm, Nanometers)
 GEN_LITERAL(_um, Microns)
@@ -303,11 +316,11 @@ GEN_LITERAL(_mi, Miles)
 ///////
 // Area
 using SquareMeters     = Unit<Area,Base>;
-using SquareInches     = Unit<Area,Inches::M*Inches::M>;
-using SquareFeet       = Unit<Area,Feet::M*Feet::M>;
-using SquareMiles      = Unit<Area,Miles::M*Miles::M>;
-using SquareKilometers = Unit<Area,Kilometers::M*Kilometers::M>;
-using Acres            = Unit<Area,SquareFeet::M*43560>;
+using SquareInches     = Unit<Area,Conversion<Inches::M*Inches::M>>;
+using SquareFeet       = Unit<Area,Conversion<Feet::M*Feet::M>>;
+using SquareMiles      = Unit<Area,Conversion<Miles::M*Miles::M>>;
+using SquareKilometers = Unit<Area,Conversion<Kilometers::M*Kilometers::M>>;
+using Acres            = Unit<Area,Conversion<SquareFeet::M*43560>>;
 
 /////////
 // Volume
@@ -315,14 +328,14 @@ using Liters           = Unit<Volume,Base>;
 using Milliliters      = Unit<Volume,Milli>;
 using CubicCentimeters = Unit<Volume,Milli>;
 using Microliters      = Unit<Volume,Micro>;
-using CubicMeters      = Unit<Volume,1e3L>;
-using CubicInches      = Unit<Volume,Inches::M*Inches::M*Inches::M*CubicMeters::M>;
-using Gallons          = Unit<Volume,CubicInches::M*231>;
-using Quarts           = Unit<Volume,Gallons::M/4>;
-using Pints            = Unit<Volume,Gallons::M/8>;
-using Cups             = Unit<Volume,Gallons::M/16>;
-using FluidOunces      = Unit<Volume,Gallons::M/128>;
-using HogsHead         = Unit<Volume,Gallons::M*63>;
+using CubicMeters      = Unit<Volume,Conversion<1000.0L>>;
+using CubicInches      = Unit<Volume,Conversion<Inches::M*Inches::M*Inches::M*CubicMeters::M>>;
+using Gallons          = Unit<Volume,Conversion<CubicInches::M*231>>;
+using Quarts           = Unit<Volume,Conversion<Gallons::M/4>>;
+using Pints            = Unit<Volume,Conversion<Gallons::M/8>>;
+using Cups             = Unit<Volume,Conversion<Gallons::M/16>>;
+using FluidOunces      = Unit<Volume,Conversion<Gallons::M/128>>;
+using HogsHead         = Unit<Volume,Conversion<Gallons::M*63>>;
 
 GEN_LITERAL( _l, Liters)
 GEN_LITERAL(_ml, Milliliters)
@@ -332,12 +345,12 @@ GEN_LITERAL(_cc, CubicCentimeters)
 ///////
 // Time
 using Seconds      = Unit<Time,Base>;
-using Minutes      = Unit<Time,60.0L>;
-using Hours        = Unit<Time,60.0L*60>;
-using Days         = Unit<Time,60.0L*60*24>;
-using Weeks        = Unit<Time,60.0L*60*24*7>;
-using Fortnights   = Unit<Time,60.0L*60*24*14>;
-using Years        = Unit<Time,Days::M*365.2422>;
+using Minutes      = Unit<Time,Conversion<60.0L>>;
+using Hours        = Unit<Time,Conversion<60.0L*60>>;
+using Days         = Unit<Time,Conversion<60.0L*60*24>>;
+using Weeks        = Unit<Time,Conversion<60.0L*60*24*7>>;
+using Fortnights   = Unit<Time,Conversion<60.0L*60*24*14>>;
+using Years        = Unit<Time,Conversion<Days::M*365.2422>>;
 using Milliseconds = Unit<Time,Milli>;
 using Microseconds = Unit<Time,Micro>;
 using Nanoseconds  = Unit<Time,Nano>;
@@ -354,12 +367,12 @@ GEN_LITERAL(_ns, Nanoseconds)
 ////////
 // Speed
 using MetersPerSecond   = Unit<Speed,Base>;
-using KilometersPerHour = Unit<Speed,1000.0L/3600>;
-using MilesPerHour      = Unit<Speed,Miles::M/Hours::M>;
-using MPH               = Unit<Speed,MetersPerSecond::M>;
-using Knots             = Unit<Speed,1852.0L/3600>;
-using Mach              = Unit<Speed,343.0L>;
-using SpeedOfLight      = Unit<Speed,299792458.0L>;
+using KilometersPerHour = Unit<Speed,Conversion<1000.0L/3600>>;
+using MilesPerHour      = Unit<Speed,Conversion<Miles::M/Hours::M>>;
+using MPH               = Unit<Speed,Conversion<MetersPerSecond::M>>;
+using Knots             = Unit<Speed,Conversion<1852.0L/3600>>;
+using Mach              = Unit<Speed,Conversion<343.0L>>;
+using SpeedOfLight      = Unit<Speed,Conversion<299792458.0L>>;
 
 GEN_LITERAL(_mps, MetersPerSecond)
 GEN_LITERAL(_mph, MilesPerHour)
@@ -367,15 +380,15 @@ GEN_LITERAL(_kph, KilometersPerHour)
 
 /////////////////////////
 // Astronomical Distances
-using LightYears        = Unit<Distance,SpeedOfLight::M*Years::M>;
-using AstronomicalUnits = Unit<Distance,LightYears::M/63241.1>;
-using Parsecs           = Unit<Distance,AstronomicalUnits::M*206265>;
+using LightYears        = Unit<Distance,Conversion<SpeedOfLight::M*Years::M>>;
+using AstronomicalUnits = Unit<Distance,Conversion<LightYears::M/63241.1>>;
+using Parsecs           = Unit<Distance,Conversion<AstronomicalUnits::M*206265>>;
 
 ///////////////
-// Acceleration
-using MetersPerSecondSquared = Unit<Acceleration,Base>;
-using FeetPerSecondSquared   = Unit<Acceleration,Feet::M>;
-using Gravity                = Unit<Acceleration,9.80665L>;
+// AcceleConversionn
+using MetersPerSecondSquared = Unit<AcceleConversionn,Base>;
+using FeetPerSecondSquared   = Unit<AcceleConversionn,Feet>;
+using Gravity                = Unit<AcceleConversionn,Conversion<9.80665L>>;
 
 GEN_LITERAL(_G, Gravity)
 
@@ -386,10 +399,10 @@ using Kilograms  = Unit<Mass,Kilo>;
 using Grams      = Unit<Mass,Base>;
 using Milligrams = Unit<Mass,Milli>;
 using Micrograms = Unit<Mass,Micro>;
-using Pounds     = Unit<Mass,453.59237L>;
-using Ounces     = Unit<Mass,Pounds::M/16>;
-using Tons       = Unit<Mass,Pounds::M*2000>;
-using Stones     = Unit<Mass,Pounds::M*14>;
+using Pounds     = Unit<Mass,Conversion<453.59237L>>;
+using Ounces     = Unit<Mass,Conversion<Pounds::M/16>>;
+using Tons       = Unit<Mass,Conversion<Pounds::M*2000>>;
+using Stones     = Unit<Mass,Conversion<Pounds::M*14>>;
 
 GEN_LITERAL(_kg, Kilograms)
 GEN_LITERAL( _g, Grams)
@@ -401,7 +414,7 @@ GEN_LITERAL(_oz, Ounces)
 /////////////////////
 // Force and momentum
 using Newtons                  = Unit<Force,Base>;
-using PoundsForce              = Unit<Force,Pounds::M*Gravity::M/1000>;
+using PoundsForce              = Unit<Force, Conversion<Pounds::M*Gravity::M/1000>>;
 using KilogramsMetersPerSecond = Unit<Momentum,Base>;
 GEN_LITERAL(_N, Newtons);
 
@@ -424,9 +437,9 @@ GEN_LITERAL(_mW, Milliwatts);
 using Megajoules    = Unit<Energy,Mega>;
 using Kilojoules    = Unit<Energy,Kilo>;
 using Joules        = Unit<Energy,Base>;
-using WattHours     = Unit<Energy,Hours::M>;
-using KilowattHours = Unit<Energy,Kilo*WattHours::M>;
-using MegawattHours = Unit<Energy,Mega*WattHours::M>;
+using WattHours     = Unit<Energy,Hours>;
+using KilowattHours = Unit<Energy,Conversion<Kilo::M,WattHours::M>>;
+using MegawattHours = Unit<Energy,Conversion<Mega::M,WattHours::M>>;
 
 GEN_LITERAL(_MWh, MegawattHours)
 GEN_LITERAL(_KWh, KilowattHours)
@@ -456,8 +469,8 @@ GEN_LITERAL(_ohms, Ohms)
 //////////////////
 // Fuel Efficiency
 using KilometersPerLiter = Unit<FuelEfficiency, Base>;
-using MilesPerGallon     = Unit<FuelEfficiency, Miles::M/Gallons::M/1000>;
-using RodsToTheHogHead   = Unit<FuelEfficiency, Rods::M/HogsHead::M/1000>;
+using MilesPerGallon     = Unit<FuelEfficiency, Conversion<Miles::M/Gallons::M/1000>>;
+using RodsToTheHogHead   = Unit<FuelEfficiency, Conversion<Rods::M/HogsHead::M/1000>>;
 
 GEN_LITERAL(_mpg, MilesPerGallon);
 
@@ -478,12 +491,16 @@ GEN_LITERAL(_THz, THz)
 ////////
 // Angle
 #ifndef M_PIl  // not defined on some systems
-#define M_PIl ((long double)M_PI)
+#define M_PIl M_PI
 #endif
+struct ConversionPi180 {
+  static constexpr long double M = M_PIl/180;
+  static constexpr long double O = 0;
+};
 using Radians = Unit<Angle,Base>;
-using Degrees = Unit<Angle,M_PIl/180>;
+using Degrees = Unit<Angle,ConversionPi180>;
 using RadiansPerSecond = Unit<AngularVelocity,Base>;
-using DegreesPerSecond = Unit<AngularVelocity,M_PIl/180>;
+using DegreesPerSecond = Unit<AngularVelocity,ConversionPi180>;
 GEN_LITERAL(_rad, Radians)
 GEN_LITERAL(_deg, Degrees)
 
@@ -497,6 +514,17 @@ Radians acos_units(double v) { return Radians(std::acos(v)); }
 Radians atan_units(double v) { return Radians(std::atan(v)); }
 Radians atan2_units(double v1, double v2) { return Radians(std::atan2(v1,v2)); }
 
+///////////////
+// Temperature
+using Kelvin     = Unit<Temperature,Conversion<1.0L, 0.0L>>;
+using Celsius    = Unit<Temperature,Conversion<1.0L, -273.15L>>;
+using Fahrenheit = Unit<Temperature,Conversion<5.0L/9, -459.67L>>;
+using Rankine    = Unit<Temperature,Conversion<5.0L/9, 0.0L>>;
+
+GEN_LITERAL(_C, Celsius)
+GEN_LITERAL(_K, Kelvin)
+GEN_LITERAL(_F, Fahrenheit)
+
 ///////////////////////////////////////////////////////////////////////////////
 // Cross Unit Relationships
 
@@ -505,8 +533,8 @@ GEN_INVERSE(Hz, Seconds)
 
 // Generate operator* and operator/ functions for interunit math
 GEN_MULT_DIV(Meters, MetersPerSecond, Seconds)                      // Distance = Speed*Time
-GEN_MULT_DIV(MetersPerSecond, MetersPerSecondSquared, Seconds)      // Speed = Acceleration*Time
-GEN_MULT_DIV(Newtons, Kilograms, MetersPerSecondSquared)            // Force = Mass*Acceleration
+GEN_MULT_DIV(MetersPerSecond, MetersPerSecondSquared, Seconds)      // Speed = AcceleConversionn*Time
+GEN_MULT_DIV(Newtons, Kilograms, MetersPerSecondSquared)            // Force = Mass*AcceleConversionn
 GEN_MULT_DIV(KilogramsMetersPerSecond, Kilograms, MetersPerSecond)  // Momentum = Mass*Velocity
 GEN_MULT_DIV(KilogramsMetersPerSecond, Newtons, Seconds)            // Momentum = Force*Time
 GEN_MULT_DIV(CubicMeters, SquareMeters, Meters)                     // Volume = Area*Distance
@@ -521,8 +549,8 @@ GEN_MULT_DIV_SQ(SquareMeters, Meters)                               // Area = Di
 
 ///////////////////////////////////////////////////////////////////////////////
 // Stream operator
-template <typename C,long double R,typename FloatType>
-inline std::ostream& operator<<(std::ostream&os, const Unit<C,R,FloatType>& u){
+template <typename R,typename C,typename FloatType>
+inline std::ostream& operator<<(std::ostream&os, const Unit<R,C,FloatType>& u){
   os << u.get();
   return os;
 }
