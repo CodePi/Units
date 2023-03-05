@@ -302,9 +302,9 @@ int main(){
   assert(Angstroms(1)*Angstroms(1)*Angstroms(1)==CubicMeters(1e-30));
 
   // Smoots and football fields
-  using Smoots = Unit<Distance,Conversion<1.702L>>;
+  using Smoots = Unit<Distance,1.702L>;
   assert(Smoots(1).approx(Meters(1.702)));
-  using FootballFields = Unit<Distance, Conversion<Yards::M*100>>;
+  using FootballFields = Unit<Distance, Yards::M*100>;
   assert(FootballFields(1)==Yards(100));
 
   // these shouldn't compile
