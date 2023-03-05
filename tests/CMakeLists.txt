@@ -6,8 +6,10 @@ set(CMAKE_CXX_STANDARD 11)
 add_executable(units_test units_test.cpp)
 
 # build units20 test
-add_executable(units20_test units20_test.cpp)
-set_property(TARGET units20_test PROPERTY CXX_STANDARD 20)
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 11)
+    add_executable(units20_test units20_test.cpp)
+    set_property(TARGET units20_test PROPERTY CXX_STANDARD 20)
+endif()
 
 # build eigen_units_test, if eigen is available
 find_package (Eigen3)
