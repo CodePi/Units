@@ -17,7 +17,7 @@ Header only, C++11, minimal overhead, type enforced conversion and arithmetic li
 ## Example Usage
 ### Basic usage and math with automatic conversion:
 ```c++
-Meters d1(5.5);         // d1 is 5.1 meters
+Meters d1(5.5);         // d1 is 5.5 meters
 Centimeters d2(27);     // d2 is 27 centimeters
 Millimeters d3 = d1+d2; // d3 is 5370 millimeters
 auto d4 = Meters(5)*7;  // d4 is 35 meters (unit*double is unit)
