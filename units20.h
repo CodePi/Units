@@ -535,8 +535,8 @@ GEN_MULT_DIV_SQ(SquareMeters, Meters)                               // Area = Di
 
 ///////////////////////////////////////////////////////////////////////////////
 // Stream operator
-template <typename R,typename C,typename FloatType>
-inline std::ostream& operator<<(std::ostream&os, const UnitBase<R,C,FloatType>& u){
+template <typename C,typename R,typename FloatType>
+inline std::ostream& operator<<(std::ostream&os, const UnitBase<C,R,FloatType>& u){
   os << u.get();
   return os;
 }
