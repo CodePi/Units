@@ -17,12 +17,12 @@
 
 #pragma once
 
-#if __cplusplus < 202000
+#if __cplusplus < 202002L
 #error "C++20 compatible compiler is required for units20.h, use units.h instead"
 #endif
 
-#define _USE_MATH_DEFINES
 #include <cmath>
+#include <numbers>
 #include <iostream>
 #include <cinttypes>
 
@@ -117,7 +117,7 @@ public:
   template<typename R2, typename FT2> FloatType operator/(UnitBase<C,R2,FT2> other) const{ return m_val / UnitBase(other).get(); }
 
   // Unary operators +-
-  UnitBase operator+() const{ return UnitBase(m_val); }
+  UnitBase operator+() const{ return *this; }
   UnitBase operator-() const{ return UnitBase(-m_val); }
 
   // operators += -= *= /=
@@ -133,7 +133,7 @@ public:
 
   template<typename R2, typename FT2>
   bool approx(UnitBase<C,R2,FT2> other, double epsilon=1e-6) const{
-    return fabs(m_val-UnitBase(other).get()) <= epsilon;
+    return std::fabs(m_val-UnitBase(other).get()) <= epsilon;
   }
 
   // allow explicit casts to FloatType (but not implicit)
@@ -163,10 +163,11 @@ template<typename Category, long double Multiplier, typename FloatType=double>
 using Unit = UnitBase<Category, Conversion<Multiplier>, FloatType>;
 
 // constexpr sqrt
-inline constexpr long double sqrtc(long double x, long double curr, long double prev){
-  return curr == prev ? curr : sqrtc(x,0.5*(curr+x/curr),curr);
+inline constexpr long double sqrtc(long double x){
+  long double curr = x, prev = 0;
+  while(curr != prev){ prev = curr; curr = 0.5L*(curr + x/curr); }
+  return curr;
 }
-inline constexpr long double sqrtc(long double x){ return sqrtc(x,x,0); }
 inline constexpr long double squarec(long double x){ return x*x; }
 inline constexpr long double cubec(long double x){ return x*x*x; }
 
@@ -306,10 +307,10 @@ GEN_LITERAL(_mi, Miles)
 ///////
 // Area
 using SquareMeters     = Unit<Area,Base>;
-using SquareInches     = Unit<Area,Inches::M*Inches::M>;
-using SquareFeet       = Unit<Area,Feet::M*Feet::M>;
-using SquareMiles      = Unit<Area,Miles::M*Miles::M>;
-using SquareKilometers = Unit<Area,Kilometers::M*Kilometers::M>;
+using SquareInches     = Unit<Area,squarec(Inches::M)>;
+using SquareFeet       = Unit<Area,squarec(Feet::M)>;
+using SquareMiles      = Unit<Area,squarec(Miles::M)>;
+using SquareKilometers = Unit<Area,squarec(Kilometers::M)>;
 using Acres            = Unit<Area,SquareFeet::M*43560>;
 
 /////////
@@ -319,7 +320,7 @@ using Milliliters      = Unit<Volume,Milli>;
 using CubicCentimeters = Unit<Volume,Milli>;
 using Microliters      = Unit<Volume,Micro>;
 using CubicMeters      = Unit<Volume,1000.0L>;
-using CubicInches      = Unit<Volume,Inches::M*Inches::M*Inches::M*CubicMeters::M>;
+using CubicInches      = Unit<Volume,cubec(Inches::M)*CubicMeters::M>;
 using Gallons          = Unit<Volume,CubicInches::M*231>;
 using Quarts           = Unit<Volume,Gallons::M/4>;
 using Pints            = Unit<Volume,Gallons::M/8>;
@@ -480,13 +481,11 @@ GEN_LITERAL(_THz, THz)
 
 ////////
 // Angle
-#ifndef M_PIl  // not defined on some systems
-#define M_PIl (long double)M_PI
-#endif
+inline constexpr long double PI = std::numbers::pi_v<long double>;
 using Radians = Unit<Angle,Base>;
-using Degrees = Unit<Angle,M_PIl/180>;
+using Degrees = Unit<Angle,PI/180>;
 using RadiansPerSecond = Unit<AngularVelocity,Base>;
-using DegreesPerSecond = Unit<AngularVelocity,M_PIl/180>;
+using DegreesPerSecond = Unit<AngularVelocity,PI/180>;
 GEN_LITERAL(_rad, Radians)
 GEN_LITERAL(_deg, Degrees)
 

@@ -15,7 +15,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#if __cplusplus < 202000
+#if __cplusplus < 202002L
 #include <iostream>
 int main(){
   std::cout << "C++20 not supported by this compiler\n";
