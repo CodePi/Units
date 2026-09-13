@@ -129,11 +129,7 @@ public:
   ////////////////////
   // compare operators
   template<typename R2, typename FT2> bool operator==(UnitBase<C,R2,FT2> other) const{ return m_val == UnitBase(other).get(); }
-  template<typename R2, typename FT2> bool operator!=(UnitBase<C,R2,FT2> other) const{ return m_val != UnitBase(other).get(); }
-  template<typename R2, typename FT2> bool operator<=(UnitBase<C,R2,FT2> other) const{ return m_val <= UnitBase(other).get(); }
-  template<typename R2, typename FT2> bool operator>=(UnitBase<C,R2,FT2> other) const{ return m_val >= UnitBase(other).get(); }
-  template<typename R2, typename FT2> bool operator< (UnitBase<C,R2,FT2> other) const{ return m_val <  UnitBase(other).get(); }
-  template<typename R2, typename FT2> bool operator> (UnitBase<C,R2,FT2> other) const{ return m_val >  UnitBase(other).get(); }
+  template<typename R2, typename FT2> auto operator<=>(UnitBase<C,R2,FT2> other) const{ return m_val <=> UnitBase(other).get(); }
 
   template<typename R2, typename FT2>
   bool approx(UnitBase<C,R2,FT2> other, double epsilon=1e-6) const{
@@ -186,31 +182,31 @@ inline constexpr long double cubec(long double x){ return x*x*x; }
   }
 
 // Macro for generating Uo = Ua * Ub
-#define GEN_MULT(Uo,Ua,Ub,FT)                                                \
-  template <typename Ra, typename Rb,     /* Ra*Rb*Uo/Ua/Ub */               \
+#define GEN_MULT(Uo,Ua,Ub)                                                   \
+  template <typename Ra, typename Rb, typename FT, /* Ra*Rb*Uo/Ua/Ub */      \
             typename Ro = Conversion<Ra::M*Rb::M*Uo::M/Ua::M/Ub::M>>              \
   inline Units::UnitBase<Uo::C, Ro, FT>                                          \
   operator*(Units::UnitBase<Ua::C,Ra,FT> a, Units::UnitBase<Ub::C,Rb,FT> b) {        \
-    static_assert(Ra::O==0||Rb::O==0, "GEN_MULT doesn't support offset");    \
+    static_assert(Ra::O==0&&Rb::O==0, "GEN_MULT doesn't support offset");    \
     Uo::FloatType val = a.get()*b.get();                                     \
     return Units::UnitBase<Uo::C, Ro, FT>(val);                                  \
   }
 
 // Macro for generating Uo = Ua / Ub
-#define GEN_DIV(Uo,Ua,Ub,FT)                                                 \
-  template <typename Ra, typename Rb,     /* Ra/Rb*Uo/Ua*Ub */               \
+#define GEN_DIV(Uo,Ua,Ub)                                                    \
+  template <typename Ra, typename Rb, typename FT, /* Ra/Rb*Uo/Ua*Ub */      \
             typename Ro = Conversion<Ra::M/Rb::M*Uo::M/Ua::M*Ub::M>>     \
   inline Units::UnitBase<Uo::C, Ro, FT>                                          \
   operator/(Units::UnitBase<Ua::C,Ra,FT> a, Units::UnitBase<Ub::C,Rb,FT> b) {        \
-    static_assert(Ra::O==0||Rb::O==0, "GEN_DIV doesn't support offset");     \
+    static_assert(Ra::O==0&&Rb::O==0, "GEN_DIV doesn't support offset");     \
     Uo::FloatType val = a.get()/b.get();                                     \
     return Units::UnitBase<Uo::C, Ro, FT>(val);                                  \
   }
 
 // Macro for generating Uo = sqrt(Ui)
-#define GEN_SQRT(Uo,Ui,FT)                                                     \
-  template <typename Ri,          /* Uo*sqrt(Ri/Ui) */                         \
-            typename Ro = Conversion<Uo::M*sqrt(Ri::M/Ui::M)>> \
+#define GEN_SQRT(Uo,Ui)                                                        \
+  template <typename Ri, typename FT, /* Uo*sqrt(Ri/Ui) */                     \
+            typename Ro = Conversion<Uo::M*sqrtc(Ri::M/Ui::M)>> \
   inline Units::UnitBase<Uo::C, Ro, FT>                                            \
   sqrt(Units::UnitBase<Ui::C,Ri,FT> in) {                                          \
     static_assert(Ri::O==0, "GEN_SQRT doesn't support offset");                \
@@ -220,39 +216,30 @@ inline constexpr long double cubec(long double x){ return x*x*x; }
 
 // generate functions U1=U2*U2, U1=U2/U1, and U2=sqrt(U1)
 #define GEN_MULT_DIV_SQ(U1,U2)                                       \
-  GEN_MULT(U1,U2,U2,double)                                          \
-  GEN_MULT(U1,U2,U2,float)                                           \
-  GEN_DIV(U2,U1,U2,double)                                           \
-  GEN_DIV(U2,U1,U2,float)                                            \
-  GEN_SQRT(U2,U1,double)                                             \
-  GEN_SQRT(U2,U1,float)
+  GEN_MULT(U1,U2,U2)                                                 \
+  GEN_DIV(U2,U1,U2)                                                  \
+  GEN_SQRT(U2,U1)
 
 // generate functions: U1=U2*U3, U1=U3*U2, U2=U1/U3, amd U3=U1/U2
 #define GEN_MULT_DIV(U1,U2,U3)                                       \
-  GEN_MULT(U1,U2,U3,double)                                          \
-  GEN_MULT(U1,U2,U3,float)                                           \
-  GEN_MULT(U1,U3,U2,double)                                          \
-  GEN_MULT(U1,U3,U2,float)                                           \
-  GEN_DIV(U2,U1,U3,double)                                           \
-  GEN_DIV(U2,U1,U3,float)                                            \
-  GEN_DIV(U3,U1,U2,double)                                           \
-  GEN_DIV(U3,U1,U2,float)
+  GEN_MULT(U1,U2,U3)                                                 \
+  GEN_MULT(U1,U3,U2)                                                 \
+  GEN_DIV(U2,U1,U3)                                                  \
+  GEN_DIV(U3,U1,U2)
 
 // Macro helper GEN_INVERSE
-#define GEN_INVERSE_HELPER(Uo,Ui,FT)                                                 \
-  template <typename Ri,                                                             \
+#define GEN_INVERSE_HELPER(Uo,Ui)                                                    \
+  template <typename Ri, typename FT,                                                \
             typename Ro = Conversion<Ui::M*Uo::M/Ri::M>>                             \
   inline UnitBase<Uo::C, Ro, FT> inverse(UnitBase<Ui::C, Ri, FT> s){                         \
-    static_assert(Uo::O==0||Ui::O==0, "GEN_INVERSE doesn't support offset");         \
+    static_assert(Uo::O==0&&Ui::O==0, "GEN_INVERSE doesn't support offset");         \
     return UnitBase<Uo::C, Ro, FT>(1/s.get());                                           \
   }
 
 // Macro helper for generating Uo = inverse(Ui)
 #define GEN_INVERSE(U1, U2)           \
-  GEN_INVERSE_HELPER(U1, U2, double)  \
-  GEN_INVERSE_HELPER(U1, U2, float)   \
-  GEN_INVERSE_HELPER(U2, U1, double)  \
-  GEN_INVERSE_HELPER(U2, U1, float)
+  GEN_INVERSE_HELPER(U1, U2)          \
+  GEN_INVERSE_HELPER(U2, U1)
 
 ///////////////////////////////////////////////////////////////////////////////
 // categories
@@ -504,14 +491,14 @@ GEN_LITERAL(_rad, Radians)
 GEN_LITERAL(_deg, Degrees)
 
 // trig functions
-double sin(Radians r) { return std::sin(r.get()); }
-double cos(Radians r) { return std::cos(r.get()); }
-double tan(Radians r) { return std::tan(r.get()); }
+inline double sin(Radians r) { return std::sin(r.get()); }
+inline double cos(Radians r) { return std::cos(r.get()); }
+inline double tan(Radians r) { return std::tan(r.get()); }
 // Note: using _units here to avoid collision with std namespace since they both take double as arg
-Radians asin_units(double v) { return Radians(std::asin(v)); }
-Radians acos_units(double v) { return Radians(std::acos(v)); }
-Radians atan_units(double v) { return Radians(std::atan(v)); }
-Radians atan2_units(double v1, double v2) { return Radians(std::atan2(v1,v2)); }
+inline Radians asin_units(double v) { return Radians(std::asin(v)); }
+inline Radians acos_units(double v) { return Radians(std::acos(v)); }
+inline Radians atan_units(double v) { return Radians(std::atan(v)); }
+inline Radians atan2_units(double v1, double v2) { return Radians(std::atan2(v1,v2)); }
 
 ///////////////
 // Temperature

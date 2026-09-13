@@ -207,30 +207,30 @@ struct RatioSqrt{
   }
 
 // Macro for generating Uo = Ua * Ub
-#define GEN_MULT(Uo,Ua,Ub,FT)                                                \
-  template <typename Ra, typename Rb,     /* Ra*Rb*Uo/Ua/Ub */               \
+#define GEN_MULT(Uo,Ua,Ub)                                                   \
+  template <typename Ra, typename Rb, typename FT, /* Ra*Rb*Uo/Ua/Ub */      \
             typename Ro = RatioProd<Ra,Rb,Uo,RatioInv<Ua>,RatioInv<Ub>>>     \
   inline Units::Unit<Uo::C, Ro, FT>                                          \
   operator*(Units::Unit<Ua::C,Ra,FT> a, Units::Unit<Ub::C,Rb,FT> b) {        \
-    static_assert(Ra::O==0||Rb::O==0, "GEN_MULT doesn't support offset");    \
+    static_assert(Ra::O==0&&Rb::O==0, "GEN_MULT doesn't support offset");    \
     Uo::FloatType val = a.get()*b.get();                                     \
     return Units::Unit<Uo::C, Ro, FT>(val);                                  \
   }
 
 // Macro for generating Uo = Ua / Ub
-#define GEN_DIV(Uo,Ua,Ub,FT)                                                 \
-  template <typename Ra, typename Rb,     /* Ra/Rb*Uo/Ua*Ub */               \
+#define GEN_DIV(Uo,Ua,Ub)                                                    \
+  template <typename Ra, typename Rb, typename FT, /* Ra/Rb*Uo/Ua*Ub */      \
             typename Ro = RatioProd<Ra,RatioInv<Rb>,Uo,RatioInv<Ua>,Ub>>     \
   inline Units::Unit<Uo::C, Ro, FT>                                          \
   operator/(Units::Unit<Ua::C,Ra,FT> a, Units::Unit<Ub::C,Rb,FT> b) {        \
-    static_assert(Ra::O==0||Rb::O==0, "GEN_DIV doesn't support offset");     \
+    static_assert(Ra::O==0&&Rb::O==0, "GEN_DIV doesn't support offset");     \
     Uo::FloatType val = a.get()/b.get();                                     \
     return Units::Unit<Uo::C, Ro, FT>(val);                                  \
   }
 
 // Macro for generating Uo = sqrt(Ui)
-#define GEN_SQRT(Uo,Ui,FT)                                                     \
-  template <typename Ri,          /* Uo*sqrt(Ri/Ui) */                         \
+#define GEN_SQRT(Uo,Ui)                                                        \
+  template <typename Ri, typename FT, /* Uo*sqrt(Ri/Ui) */                     \
             typename Ro = RatioProd<Uo,RatioSqrt<RatioProd<Ri,RatioInv<Ui>>>>> \
   inline Units::Unit<Uo::C, Ro, FT>                                            \
   sqrt(Units::Unit<Ui::C,Ri,FT> in) {                                          \
@@ -241,39 +241,30 @@ struct RatioSqrt{
 
 // generate functions U1=U2*U2, U1=U2/U1, and U2=sqrt(U1)
 #define GEN_MULT_DIV_SQ(U1,U2)                                       \
-  GEN_MULT(U1,U2,U2,double)                                          \
-  GEN_MULT(U1,U2,U2,float)                                           \
-  GEN_DIV(U2,U1,U2,double)                                           \
-  GEN_DIV(U2,U1,U2,float)                                            \
-  GEN_SQRT(U2,U1,double)                                             \
-  GEN_SQRT(U2,U1,float)
+  GEN_MULT(U1,U2,U2)                                                 \
+  GEN_DIV(U2,U1,U2)                                                  \
+  GEN_SQRT(U2,U1)
 
 // generate functions: U1=U2*U3, U1=U3*U2, U2=U1/U3, amd U3=U1/U2
 #define GEN_MULT_DIV(U1,U2,U3)                                       \
-  GEN_MULT(U1,U2,U3,double)                                          \
-  GEN_MULT(U1,U2,U3,float)                                           \
-  GEN_MULT(U1,U3,U2,double)                                          \
-  GEN_MULT(U1,U3,U2,float)                                           \
-  GEN_DIV(U2,U1,U3,double)                                           \
-  GEN_DIV(U2,U1,U3,float)                                            \
-  GEN_DIV(U3,U1,U2,double)                                           \
-  GEN_DIV(U3,U1,U2,float)
+  GEN_MULT(U1,U2,U3)                                                 \
+  GEN_MULT(U1,U3,U2)                                                 \
+  GEN_DIV(U2,U1,U3)                                                  \
+  GEN_DIV(U3,U1,U2)
 
 // Macro helper GEN_INVERSE
-#define GEN_INVERSE_HELPER(Uo,Ui,FT)                                                 \
-  template <typename Ri,                                                             \
+#define GEN_INVERSE_HELPER(Uo,Ui)                                                    \
+  template <typename Ri, typename FT,                                                \
             typename Ro = RatioProd<RatioInv<Ri>,Uo,Ui>>                             \
   inline Unit<Uo::C, Ro, FT> inverse(Unit<Ui::C, Ri, FT> s){                         \
-    static_assert(Uo::O==0||Ui::O==0, "GEN_INVERSE doesn't support offset");         \
+    static_assert(Uo::O==0&&Ui::O==0, "GEN_INVERSE doesn't support offset");         \
     return Unit<Uo::C, Ro, FT>(1/s.get());                                           \
   }
 
 // Macro helper for generating Uo = inverse(Ui)
 #define GEN_INVERSE(U1, U2)           \
-  GEN_INVERSE_HELPER(U1, U2, double)  \
-  GEN_INVERSE_HELPER(U1, U2, float)   \
-  GEN_INVERSE_HELPER(U2, U1, double)  \
-  GEN_INVERSE_HELPER(U2, U1, float)
+  GEN_INVERSE_HELPER(U1, U2)          \
+  GEN_INVERSE_HELPER(U2, U1)
 
 ///////////////////////////////////////////////////////////////////////////////
 // categories
@@ -529,14 +520,14 @@ GEN_LITERAL(_rad, Radians)
 GEN_LITERAL(_deg, Degrees)
 
 // trig functions
-double sin(Radians r) { return std::sin(r.get()); }
-double cos(Radians r) { return std::cos(r.get()); }
-double tan(Radians r) { return std::tan(r.get()); }
+inline double sin(Radians r) { return std::sin(r.get()); }
+inline double cos(Radians r) { return std::cos(r.get()); }
+inline double tan(Radians r) { return std::tan(r.get()); }
 // Note: using _units here to avoid collision with std namespace since they both take double as arg
-Radians asin_units(double v) { return Radians(std::asin(v)); }
-Radians acos_units(double v) { return Radians(std::acos(v)); }
-Radians atan_units(double v) { return Radians(std::atan(v)); }
-Radians atan2_units(double v1, double v2) { return Radians(std::atan2(v1,v2)); }
+inline Radians asin_units(double v) { return Radians(std::asin(v)); }
+inline Radians acos_units(double v) { return Radians(std::acos(v)); }
+inline Radians atan_units(double v) { return Radians(std::atan(v)); }
+inline Radians atan2_units(double v1, double v2) { return Radians(std::atan2(v1,v2)); }
 
 ///////////////
 // Temperature
